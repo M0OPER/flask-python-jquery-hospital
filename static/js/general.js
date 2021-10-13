@@ -7,7 +7,7 @@
             data: { email    : email,
                     password : password },
             type: 'post',
-            success: function(response) {
+            success: function(response) { 
               if (response.status == "OK") {
                 $("#msgIngresar #mensajeOk").text(response.msg);
                 $('#modalIniciarSesion').modal('show');

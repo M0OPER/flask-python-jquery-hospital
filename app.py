@@ -19,7 +19,7 @@ def inicio():
 def iniciarSesion():
 	try:
 		tip = ""
-		name = ""
+		name = "" 
 		email    = request.form['email'];
 		password = request.form['password'];
 		if email == "pac123@gmail.com":
