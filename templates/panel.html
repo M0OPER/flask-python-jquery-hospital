@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PANEL | HOSPITAL</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css">
+	<script type="text/javascript" src="../static/js/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="../static/js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../static/css/general.css">
+	<script type="text/javascript" src="../static/js/general.js"></script>
+</head>
+<body>
+	<!--HEAD-->
+<nav id="head" class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <button type="button" class="btn btn-light">HOSPITAL SIMON BOLIVAR</button>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
+          <a href="/panel"><button type="button" class="btn btn-secondary active">DASHBOARD</button></a>
+          <a href="/contactos"><button type="button" class="btn btn-light">CONTACTOS</button></a>
+          <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      {% with messages = get_flashed_messages(category_filter=["botonesDeSesion"]) %}
+        {% if messages %}
+          {% for message in messages %}
+            {{ message }} 
+          {% endfor %} 
+        {% endif %}
+      {% endwith %}
+    </form>
+  </div>
+</nav>
+<button id="welcome" type="button" class="btn btn-secondary btn-sm">MIGUEL ANGEL - ADMINISTRADOR</button>
+	<script type="text/javascript" src="../static/js/bodyPanel.js"></script>
+	<script type="text/javascript" src="../static/js/foot.js"></script>
+</body>
+</html>
