@@ -12,6 +12,7 @@
                 $("#msgIngresar #mensajeOk").text(response.msg);
                 $('#modalIniciarSesion').modal('show');
                 showMensaje("#msgIngresar", "Ok");
+                location.reload();
               }else if(response.status == "FAIL"){
                 $("#msgRegistro #mensajeFail").text(response.msg);
                 showMensaje("#msgRegistro", "Fail");

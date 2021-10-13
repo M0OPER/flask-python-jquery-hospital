@@ -1,7 +1,7 @@
 import os
 import yagmail as yagmail
 import funciones
-from flask import Flask, render_template, flash, request, redirect, url_for, session, Markup
+from flask import Flask, render_template, flash, request, session, Markup
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -18,9 +18,21 @@ def inicio():
 @app.route('/iniciarSesion', methods=['POST'])
 def iniciarSesion():
 	try:
-		pass
+		tip = ""
+		name = ""
+		email    = request.form['email'];
+		password = request.form['password'];
+		if email == "pac123@gmail.com":
+			msg = "Acceso concedido"
+			sts = "OK"
+			tip = "PACIENTE"
+			name = "EDWIN MONTES MEZA"
+		else:
+			msg = "Usuario o contraseña incorrecta"
+			sts = "FAIL"
+		return ({'status':sts,'msg':msg,'tip':tip, 'name':name});
 	except Exception as e:
-		raise e
+		return ({'status':'FAIL','msg':e});
 
 @app.route('/cerrarSesion', methods=['POST'])
 def cerrarSesion():
