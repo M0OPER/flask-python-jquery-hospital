@@ -35,6 +35,7 @@ def cerrarSesion():
 
 @app.route('/registro/')
 def registro():
+	botonesSesion()
 	return render_template("registro.html")
 
 @app.route('/registrarUsuario', methods=['POST'])
@@ -58,7 +59,7 @@ def panel():
 
 @app.route('/usuario/')
 def usuario():
-    return render_template('usuario.html')
+		return render_template('usuario.html')
 
 @app.route('/contactos/')
 def contactos():
