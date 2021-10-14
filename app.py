@@ -98,12 +98,14 @@ def servicios():
 def botonesSesion():
 	session.pop('_flashes', None)
 	sesion = funciones.verificarSesion()
-	if sesion == "INVITADO":
-		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info d-none">DASHBOARD</button></a>')
-		botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button>')
-	elif sesion == "PACIENTE" or sesion == "MEDICO" or sesion == "ADMINISTRADOR":
+	botonBienvenido = ("Bienvenido al sistema")
+	botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info d-none">DASHBOARD</button></a>')
+	botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button>')
+	if sesion == "PACIENTE" or sesion == "MEDICO" or sesion == "ADMINISTRADOR":
+		botonBienvenido = (	session["name"] + "-" + sesion)
 		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info">DASHBOARD</button></a>')
 		botonesDeSesion = Markup('<button id="csCerrarSesion" type="button" class="btn btn-light">Cerrar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
 	flash(botonPanel, "botonPanel")
+	flash(botonBienvenido, "botonBienvenido")
 	flash(botonesDeSesion, "botonesDeSesion")
 	

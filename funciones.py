@@ -2,11 +2,12 @@ from flask import Flask, session
 
 def verificarSesion():
 	if "tipo_usuario" in session:
-		return session["tipo_usuario"]
+		msg = session["tipo_usuario"]
 	else:
 		session["tipo_usuario"] = "INVITADO"
 		session["online"] = False
-		return session["tipo_usuario"]
+		msg = "Bienvenido al sistema"
+	return msg
 
 def iniciarSesion(tip, name):
 	try:

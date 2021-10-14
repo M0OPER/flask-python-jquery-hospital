@@ -38,7 +38,15 @@
 		</form>
 	</div>
 </nav>
-	<button id="welcome" type="button" class="btn btn-secondary btn-sm">Bienvenido al sistema</button>
+	<button id="welcome" type="button" class="btn btn-secondary btn-sm">
+		{% with messages = get_flashed_messages(category_filter=["botonBienvenido"]) %}
+				{% if messages %}
+					{% for message in messages %}
+						{{ message }} 
+					{% endfor %} 
+				{% endif %}
+			{% endwith %}
+	</button>
 	<div id="contenido">
 			{% block contenido %}
 			
