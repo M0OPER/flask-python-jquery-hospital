@@ -1,10 +1,18 @@
 import os
 import yagmail as yagmail
 import funciones
-from flask import Flask, render_template, flash, request, redirect, url_for, session, Markup
+from flask import Flask, render_template, flash, request, session, Markup, redirect
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+@app.errorhandler(500)
+def internal_error(error):
+	return render_template("error_500.html"), 500
+
+@app.errorhandler(404)
+def page_not_found(error):
+	return render_template("error_404.html"), 404
 
 @app.route('/')
 def raiz():
@@ -18,9 +26,30 @@ def inicio():
 @app.route('/iniciarSesion', methods=['POST'])
 def iniciarSesion():
 	try:
-		pass
+		tip = ""
+		name = ""
+		msg = "Acceso concedido"
+		sts = "OK"
+		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
+		email    = request.form['email'];
+		password = request.form['password'];
+		if email == "pac123@gmail.com" and password == "pac12022":
+			tip = "PACIENTE"
+			name = "EDWIN MONTES MEZA"
+		elif email == "med45@hotmail.com":
+			tip = "MEDICO"
+			name = "JAIME POLO"
+		elif email == "admin@simon_bolivar.com":
+			tip = "ADMINISTRADOR"
+			name = "BEIMAN JOSÉ"
+			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
+		else:
+			msg = "Usuario o contraseña incorrecta"
+			sts = "FAIL"
+		funciones.iniciarSesion(tip, name)
+		return ({'status':sts,'msg':msg,'tip':tip, 'name':name});
 	except Exception as e:
-		raise e
+		return ({'status':'FAIL','msg':e});
 
 @app.route('/cerrarSesion', methods=['POST'])
 def cerrarSesion():
@@ -55,11 +84,38 @@ def registrar():
 @app.route('/panel/')
 def panel():
 	botonesSesion()
-	return render_template('panel.html')
+	if session["online"] == False:
+		return redirect("/inicio")
+	else:
+		flash(session["paneles"], "paneles")
+		if session["tipo_usuario"] == "ADMINISTRADOR":
+			return render_template('/administrador.html')
+		elif session["tipo_usuario"] == "MEDICO":
+			return render_template('/medicos.html')
+		elif session["tipo_usuario"] == "PACIENTE":
+			return render_template('/pacientes.html')
+			
+@app.route('/panel/administrador')
+def panel_administrador():
+	botonesSesion()
+	return render_template("administrador.html")
+
+@app.route('/panel/medicos')
+def panel_medicos():
+	botonesSesion()
+	return render_template("medicos.html")
+
+@app.route('/panel/pacientes')
+def panel_pacientes():
+	botonesSesion()
+	return render_template("pacientes.html")
 
 @app.route('/usuario/')
 def usuario():
-		return render_template('usuario.html')
+	botonesSesion()
+	if session["online"] == False:
+		return redirect("/inicio")
+	return render_template('usuario.html')
 
 @app.route('/contactos/')
 def contactos():
@@ -74,11 +130,14 @@ def servicios():
 def botonesSesion():
 	session.pop('_flashes', None)
 	sesion = funciones.verificarSesion()
-	botonesDeNavegacion = Markup('<button class="btn btn-light">PRUEBA</button>')
-	if sesion == "INVITADO":
-		botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
-	elif sesion == "MEDICO":
+	botonBienvenido = ("Bienvenido al sistema")
+	botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info d-none">DASHBOARD</button></a>')
+	botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button>')
+	if sesion == "PACIENTE" or sesion == "MEDICO" or sesion == "ADMINISTRADOR":
+		botonBienvenido = (	session["name"] + "-" + sesion)
+		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info">DASHBOARD</button></a>')
 		botonesDeSesion = Markup('<button id="csCerrarSesion" type="button" class="btn btn-light">Cerrar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
-	flash(botonesDeNavegacion, "botonesDeNavegacion")
+	flash(botonPanel, "botonPanel")
 	flash(botonesDeSesion, "botonesDeSesion")
+	flash(botonBienvenido, "botonBienvenido")
 	
