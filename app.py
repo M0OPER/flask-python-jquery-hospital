@@ -27,24 +27,23 @@ def inicio():
 def iniciarSesion():
 	try:
 		tip = ""
-		name = "" 
+		name = ""
+		msg = "Acceso concedido"
+		sts = "OK"
 		email    = request.form['email'];
 		password = request.form['password'];
 		if email == "pac123@gmail.com" and password == "pac12022":
-			msg = "Acceso concedido"
-			sts = "OK"
 			tip = "PACIENTE"
 			name = "EDWIN MONTES MEZA"
+			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
 		elif email == "med45@hotmail.com":
-			msg = "Acceso concedido"
-			sts = "OK"
 			tip = "MEDICO"
 			name = "JAIME POLO"
+			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li></li>')
 		elif email == "admin@simon_bolivar.com":
-			msg = "Acceso concedido"
-			sts = "OK"
 			tip = "ADMINISTRADOR"
 			name = "BEIMAN JOSÉ"
+			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
 		else:
 			msg = "Usuario o contraseña incorrecta"
 			sts = "FAIL"
@@ -88,6 +87,7 @@ def panel():
 	botonesSesion()
 	if session["online"] == False:
 		return redirect("/inicio")
+	flash(session["paneles"], "paneles")
 	return render_template('panel.html')
 
 @app.route('/usuario/')
@@ -118,6 +118,6 @@ def botonesSesion():
 		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info">DASHBOARD</button></a>')
 		botonesDeSesion = Markup('<button id="csCerrarSesion" type="button" class="btn btn-light">Cerrar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
 	flash(botonPanel, "botonPanel")
-	flash(botonBienvenido, "botonBienvenido")
 	flash(botonesDeSesion, "botonesDeSesion")
+	flash(botonBienvenido, "botonBienvenido")
 	
