@@ -2,6 +2,8 @@ import os
 import yagmail as yagmail
 import funciones
 from flask import Flask, render_template, flash, request, session, Markup, redirect
+import sqlite3
+from sqlite3 import Error
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -16,7 +18,7 @@ def page_not_found(error):
 
 @app.route('/')
 def raiz():
-	return render_template('inicio.html')
+	return redirect('inicio')
 
 @app.route('/inicio/')
 def inicio():
@@ -65,7 +67,8 @@ def cerrarSesion():
 @app.route('/registro/')
 def registro():
 	botonesSesion()
-	return render_template("registro.html")
+	tipo_docs = qry_soporte("DOCS")
+	return render_template("registro.html", tipo_docs = tipo_docs)
 
 @app.route('/registrarUsuario', methods=['POST'])
 def registrar():
@@ -141,3 +144,17 @@ def botonesSesion():
 	flash(botonesDeSesion, "botonesDeSesion")
 	flash(botonBienvenido, "botonBienvenido")
 	
+def sql_connection():
+    try:
+        con =  sqlite3.connect('hospital.db')
+        return con;
+    except Error:
+        print(Error)
+
+def qry_soporte(cod):
+        strsql = "select * FROM soporte WHERE sop_cod = '" + cod + "'"
+        con = sql_connection()
+        cursorObj = con.cursor()
+        cursorObj.execute(strsql)
+        result = cursorObj.fetchall()
+        return result
