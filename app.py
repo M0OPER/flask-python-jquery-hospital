@@ -90,7 +90,7 @@ def panel():
 		flash(session["paneles"], "paneles")
 		if session["tipo_usuario"] == "ADMINISTRADOR":
 			return render_template('/administrador.html')
-		elif session["tipo_usuario"] == "MEDICOS":
+		elif session["tipo_usuario"] == "MEDICO":
 			return render_template('/medicos.html')
 		elif session["tipo_usuario"] == "PACIENTE":
 			return render_template('/pacientes.html')
