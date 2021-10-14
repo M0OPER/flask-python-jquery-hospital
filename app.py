@@ -64,6 +64,11 @@ def cerrarSesion():
 		msg = e
 		return ({'status':'FAIL','msg':msg});
 
+@app.route('/recuperar_password/')
+def recuperar_password():
+	botonesSesion()
+	return render_template("recuperar_password.html")
+
 @app.route('/registro/')
 def registro():
 	botonesSesion()

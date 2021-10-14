@@ -65,7 +65,7 @@ document.write(`
   </div>
   <div class="form-group form-check">
   	<div><a href="/registro">¿No se ha registrado en el sistema?</a></div>
-  	<div><a href="">¿Olvidó su contraseña?</a></div>    
+  	<div><a href="/recuperar_password">¿Olvidó su contraseña?</a></div>    
   </div>
 </form>
       </div>

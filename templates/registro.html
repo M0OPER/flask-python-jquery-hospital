@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block titulo %}INICIO{% endblock %}
+{% block titulo %}REGISTRO{% endblock %}
 {% block navegacion %}
   <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
   {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
@@ -18,17 +18,17 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header modalHead">
-        Registro al sistema
+        REGISTRO AL SISTEMA
       </div>
       <div class="modal-body">
 
         <div class="form-group">
          <div class="row">
          <div class="col">
-          <input id="nombres" name="nombres" type="text" class="form-control" placeholder="Nombres">
+          <input id="nombres" name="nombres" type="text" class="form-control" placeholder="Nombres" required>
          </div>
          <div class="col">
-          <input id="apellidos" name="apellidos" type="text" class="form-control" placeholder="Apellidos">
+          <input id="apellidos" name="apellidos" type="text" class="form-control" placeholder="Apellidos" required>
          </div>
         </div>
         </div>
@@ -45,7 +45,7 @@
           </select>
          </div>
          <div class="col">
-          <input type="number" class="form-control" placeholder="Numero de documento">
+          <input type="number" class="form-control" placeholder="Numero de documento" required>
          </div>
         </div>
        </div>
