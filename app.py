@@ -1,10 +1,14 @@
 import os
 import yagmail as yagmail
 import funciones
-from flask import Flask, render_template, flash, request, session, Markup
+from flask import Flask, render_template, flash, request, session, Markup, redirect
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+@app.errorhandler(404)
+def page_not_found(error):
+ return render_template("error_404.html"), 404
 
 @app.route('/')
 def raiz():
@@ -78,11 +82,15 @@ def registrar():
 @app.route('/panel/')
 def panel():
 	botonesSesion()
+	if session["online"] == False:
+		return redirect("/inicio")
 	return render_template('panel.html')
 
 @app.route('/usuario/')
 def usuario():
 	botonesSesion()
+	if session["online"] == False:
+		return redirect("/inicio")
 	return render_template('usuario.html')
 
 @app.route('/contactos/')
