@@ -2,19 +2,29 @@
 {% block titulo %}CONTACTOS{% endblock %}
 {% block navegacion %}
   <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
-  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
-    {% if messages %}
-      {% for message in messages %}
-        {{ message }} 
-      {% endfor %} 
-    {% endif %}
-  {% endwith %}
-  <a href="/contactos"><button type="button" class="btn btn-secondary active">CONTACTOS</button></a>
+  <a href="/panel"><button type="button" class="btn btn-light">PANEL</button></a>
+  <a href="/contactos"><button type="button" class="btn btn-secondary active">CONTACTENOS</button></a>
   <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
 {% endblock %}
 {% block contenido %}
-<div>
-  <h1>PAGINA DE RELLENO (NO NECESITA POST NI GET)</h1>
-  <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur autem inventore maiores voluptatem sit facilis quod, saepe eius, corporis, vero soluta ducimus quaerat consectetur alias? Consequuntur ex totam ipsam in?</p>
-</div>
+	<div>
+    
+	<h3 class="p-3 mb-2 bg-gradient-warning text-primary">Contactos del Hospital Simon Bolivar, Barranquilla Atlantico</p>
+    <p> Teléfonos </p>
+    <p> 6014567845--304627650 </p>
+    <p> Correo electronico </p>
+    <p> hospitalsimonbolivar@gmail.com </p>
+    <form action="https://miweb.com/contacto/solicitud">
+      <p>Tu nombre:</p>
+      <input type="text" name="nombre"/>
+      <p>Tu email:</p>
+      <input type="text" name="email"/>
+      <p>Asunto de tu solicito:</p>
+      <input type="text" name="asunto"/>
+      <p>Texto de tu solicitud:</p>
+      <input type="textarea" name="solicitud"/ rows="5" cols="40">
+      <p><input type="submit" value="Enviar"></p>
+    </form>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5552.353156283039!2d-75.34533542839097!3d10.252988394698066!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sco!4v1634169872501!5m2!1ses-419!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+	</div>
 {% endblock %}
