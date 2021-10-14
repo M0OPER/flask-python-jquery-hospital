@@ -2,12 +2,19 @@
 {% block titulo %}SERVICIOS{% endblock %}
 {% block navegacion %}
   <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
-  <a href="/panel"><button type="button" class="btn btn-light">PANEL</button></a>
+  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }} 
+      {% endfor %} 
+    {% endif %}
+  {% endwith %}
   <a href="/contactos"><button type="button" class="btn btn-light">CONTACTOS</button></a>
   <a href="/servicios"><button type="button" class="btn btn-secondary active">SERVICIOS</button></a>
 {% endblock %}
 {% block contenido %}
 	<div>
-		<h1>AQUI SE EDITA</h1>
+		<h1>PAGINA DE RELLENO (NO NECESITA POST NI GET)</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, aperiam ipsum, magni veniam et veritatis a, ab cupiditate soluta velit excepturi quia perferendis non ullam. Illo necessitatibus esse a atque.</p>
 	</div>
 {% endblock %}

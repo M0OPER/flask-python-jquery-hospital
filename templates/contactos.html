@@ -2,15 +2,19 @@
 {% block titulo %}CONTACTOS{% endblock %}
 {% block navegacion %}
   <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
-  <a href="/panel"><button type="button" class="btn btn-light">PANEL</button></a>
+  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }} 
+      {% endfor %} 
+    {% endif %}
+  {% endwith %}
   <a href="/contactos"><button type="button" class="btn btn-secondary active">CONTACTOS</button></a>
   <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
 {% endblock %}
 {% block contenido %}
-	<div>
-		PRUEBA 2
-	</div>
-
-  git config --global user.email "jaimepolo75@gmail.com"
-  git config --global user.name "jaispolpe"
+<div>
+  <h1>PAGINA DE RELLENO (NO NECESITA POST NI GET)</h1>
+  <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur autem inventore maiores voluptatem sit facilis quod, saepe eius, corporis, vero soluta ducimus quaerat consectetur alias? Consequuntur ex totam ipsam in?</p>
+</div>
 {% endblock %}

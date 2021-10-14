@@ -22,14 +22,25 @@ def iniciarSesion():
 		name = "" 
 		email    = request.form['email'];
 		password = request.form['password'];
-		if email == "pac123@gmail.com":
+		if email == "pac123@gmail.com" and password == "pac12022":
 			msg = "Acceso concedido"
 			sts = "OK"
 			tip = "PACIENTE"
 			name = "EDWIN MONTES MEZA"
+		elif email == "med45@hotmail.com":
+			msg = "Acceso concedido"
+			sts = "OK"
+			tip = "MEDICO"
+			name = "JAIME POLO"
+		elif email == "admin@simon_bolivar.com":
+			msg = "Acceso concedido"
+			sts = "OK"
+			tip = "ADMINISTRADOR"
+			name = "BEIMAN JOSÉ"
 		else:
 			msg = "Usuario o contraseña incorrecta"
 			sts = "FAIL"
+		funciones.iniciarSesion(tip, name)
 		return ({'status':sts,'msg':msg,'tip':tip, 'name':name});
 	except Exception as e:
 		return ({'status':'FAIL','msg':e});
@@ -71,7 +82,8 @@ def panel():
 
 @app.route('/usuario/')
 def usuario():
-		return render_template('usuario.html')
+	botonesSesion()
+	return render_template('usuario.html')
 
 @app.route('/contactos/')
 def contactos():
@@ -86,11 +98,12 @@ def servicios():
 def botonesSesion():
 	session.pop('_flashes', None)
 	sesion = funciones.verificarSesion()
-	botonesDeNavegacion = Markup('<button class="btn btn-light">PRUEBA</button>')
 	if sesion == "INVITADO":
-		botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
-	elif sesion == "MEDICO":
+		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info d-none">DASHBOARD</button></a>')
+		botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button>')
+	elif sesion == "PACIENTE" or sesion == "MEDICO" or sesion == "ADMINISTRADOR":
+		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info">DASHBOARD</button></a>')
 		botonesDeSesion = Markup('<button id="csCerrarSesion" type="button" class="btn btn-light">Cerrar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
-	flash(botonesDeNavegacion, "botonesDeNavegacion")
+	flash(botonPanel, "botonPanel")
 	flash(botonesDeSesion, "botonesDeSesion")
 	

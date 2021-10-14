@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block titulo %}INICIO{% endblock %}
 {% block navegacion %}
-  <a href="/inicio"><button type="button" class="btn btn-secondary activet">INICIO</button></a>
-  <a href="/panel"><button type="button" class="btn btn-light">PANEL</button></a>
+  <a href="/inicio"><button type="button" class="btn btn-secondary active">INICIO</button></a>
+  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }} 
+      {% endfor %} 
+    {% endif %}
+  {% endwith %}
   <a href="/contactos"><button type="button" class="btn btn-light">CONTACTOS</button></a>
   <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
 {% endblock %}

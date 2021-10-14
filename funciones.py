@@ -5,5 +5,13 @@ def verificarSesion():
 		return session["tipo_usuario"]
 	else:
 		session["tipo_usuario"] = "INVITADO"
-		session["online"] = True
+		session["online"] = False
 		return session["tipo_usuario"]
+
+def iniciarSesion(tip, name):
+	try:
+		session["tipo_usuario"] = tip
+		session["name"] = name
+		session["online"] = True
+	except Exception as e:
+		return e
