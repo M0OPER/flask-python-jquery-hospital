@@ -30,20 +30,19 @@ def iniciarSesion():
 		name = ""
 		msg = "Acceso concedido"
 		sts = "OK"
+		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
 		email    = request.form['email'];
 		password = request.form['password'];
 		if email == "pac123@gmail.com" and password == "pac12022":
 			tip = "PACIENTE"
 			name = "EDWIN MONTES MEZA"
-			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
 		elif email == "med45@hotmail.com":
 			tip = "MEDICO"
 			name = "JAIME POLO"
-			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li></li>')
 		elif email == "admin@simon_bolivar.com":
 			tip = "ADMINISTRADOR"
 			name = "BEIMAN JOSÉ"
-			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
+			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
 		else:
 			msg = "Usuario o contraseña incorrecta"
 			sts = "FAIL"
@@ -87,8 +86,29 @@ def panel():
 	botonesSesion()
 	if session["online"] == False:
 		return redirect("/inicio")
-	flash(session["paneles"], "paneles")
-	return render_template('panel.html')
+	else:
+		flash(session["paneles"], "paneles")
+		if session["tipo_usuario"] == "ADMINISTRADOR":
+			return render_template('/administrador.html')
+		elif session["tipo_usuario"] == "MEDICOS":
+			return render_template('/medicos.html')
+		elif session["tipo_usuario"] == "PACIENTE":
+			return render_template('/pacientes.html')
+			
+@app.route('/panel/administrador')
+def panel_administrador():
+	botonesSesion()
+	return render_template("administrador.html")
+
+@app.route('/panel/medicos')
+def panel_medicos():
+	botonesSesion()
+	return render_template("medicos.html")
+
+@app.route('/panel/pacientes')
+def panel_pacientes():
+	botonesSesion()
+	return render_template("pacientes.html")
 
 @app.route('/usuario/')
 def usuario():
