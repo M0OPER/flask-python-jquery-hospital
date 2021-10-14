@@ -6,9 +6,13 @@ from flask import Flask, render_template, flash, request, session, Markup, redir
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+@app.errorhandler(500)
+def internal_error(error):
+	return render_template("error_500.html"), 500
+
 @app.errorhandler(404)
 def page_not_found(error):
- return render_template("error_404.html"), 404
+	return render_template("error_404.html"), 404
 
 @app.route('/')
 def raiz():
