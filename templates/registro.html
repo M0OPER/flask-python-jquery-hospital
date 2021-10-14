@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block titulo %}INICIO{% endblock %}
+{% block titulo %}REGISTRO{% endblock %}
 {% block navegacion %}
   <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
   {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
@@ -13,5 +13,82 @@
   <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
 {% endblock %}
 {% block contenido %}
+  
+<div class="" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        REGISTRO AL SISTEMA
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+         <div class="row">
+         <div class="col">
+          <input id="nombres" name="nombres" type="text" class="form-control" placeholder="Nombres" required>
+         </div>
+         <div class="col">
+          <input id="apellidos" name="apellidos" type="text" class="form-control" placeholder="Apellidos" required>
+         </div>
+        </div>
+        </div>
+
+        
+        <div class="form-group">
+        <div class="row">
+         <div class="col">
+          <select class="form-control" id="exampleFormControlSelect1">
+            <option value="0">--Tipo de documento--</option>
+            {% for tdocs in tipo_docs %}
+            <option value="{% print(tdocs[0]) %}">{% print(tdocs[2]) %}</option>
+            {% endfor %}
+          </select>
+         </div>
+         <div class="col">
+          <input type="number" class="form-control" placeholder="Numero de documento" required>
+         </div>
+        </div>
+       </div>
+
+       <div class="form-group">
+        <div class="row">
+         <div class="col">
+          <input id="email" name="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Correo electronico">
+    <small id="emailHelp" class="form-text text-muted">No compartiremos tu correo con nadie más.</small>
+         </div>
+        </div>
+       </div>
+
+       <div class="form-group">
+        <div class="row">
+         <div class="col">
+          <input type="number" class="form-control" placeholder="Telefono">
+         </div>
+         <div class="col">
+          <input type="text" class="form-control" placeholder="Direccion">
+         </div>
+        </div>
+       </div>
+
+       <div class="form-group">
+        <div class="row">
+         <div class="col">
+          <input type="password" class="form-control" placeholder="Contraseña">
+         </div>
+         <div class="col">
+          <input id="password" name="password" type="password" class="form-control" placeholder="Confirma contraseña">
+         </div>
+        </div>
+       </div>
+
+       
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+       <div id="msgRegistro"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button id="registrar" type="" class="btn btn-verde">ENVIAR REGISTRO</button>
+      </div>
+    </div>
+  </div>
+</div>
  <script type="text/javascript" src="../static/js/bodyRegistro.js"></script>
 {% endblock %}
