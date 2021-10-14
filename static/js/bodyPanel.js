@@ -172,7 +172,7 @@ document.write(`
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modalHead">
-        Detalles cita #1<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+        DETALLES CITA #1<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
       </div>
       <div class="modal-body">
         <form>
@@ -215,7 +215,7 @@ document.write(`
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modalHead">
-        Cancelar cita #1<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+        CANCELAR CITA #1<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
       </div>
       <div class="modal-body">
         <form>
@@ -238,7 +238,7 @@ document.write(`
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modalHead">
-        Solicitar cita<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+        SOLICITAR CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
       </div>
       <div class="modal-body">
         <form>

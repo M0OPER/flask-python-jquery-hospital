@@ -49,7 +49,7 @@ document.write(`
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modalHead">
-      	Inicio de sesion<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      	INICIO DE SESION<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
       </div>
       <div class="modal-body">
         <form>
