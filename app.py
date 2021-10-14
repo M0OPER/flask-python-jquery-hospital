@@ -30,7 +30,7 @@ def iniciarSesion():
 	try:
 		tip = ""
 		name = ""
-		msg = "Acceso concedido"
+		msg = "Acceso concedido" 
 		sts = "OK"
 		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
 		email    = request.form['email'];
