@@ -1,4 +1,5 @@
 from flask import Flask, session
+import bcrypt
 
 def verificarSesion():
 	if "tipo_usuario" in session:
@@ -16,3 +17,8 @@ def iniciarSesion(tip, name):
 		session["online"] = True
 	except Exception as e:
 		return e
+
+def crear_hash(password):
+	salt = bcrypt.gensalt()
+	msg = bcrypt.hashpw(password.encode(), salt)
+	return msg

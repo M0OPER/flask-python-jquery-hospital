@@ -11,3 +11,6 @@ password : medico12
 ADMINISTRADOR =>
 email    : admin@simon_bolivar.com
 password : admin
+
+b'$2b$12$XcxPz2rraUyXtlSr4b/TXurjv/bmYGE7.bTi/10RuXSOMjGuwIGvK'
+b'$2b$12$XcxPz2rraUyXtlSr4b/TXurjv/bmYGE7.bTi/10RuXSOMjGuwIGvK'

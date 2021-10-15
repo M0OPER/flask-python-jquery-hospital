@@ -1,9 +1,10 @@
-import funciones, os, secrets, hashlib, uuid, sqlite3, yagmail as yagmail, bcrypt
+import funciones, consultas, os, secrets, yagmail as yagmail
 from flask import Flask, render_template, flash, request, session, Markup, redirect
-from sqlite3 import Error
+import sys, bcrypt
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+yag = yagmail.SMTP('godred12994@gmail.com', 'Easy1234#') 
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -31,8 +32,13 @@ def iniciarSesion():
 		msg = "Acceso concedido" 
 		sts = "OK"
 		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
-		email    = request.form['email'];
-		password = request.form['password'];
+		email    = request.form['email']
+		password = request.form['password']
+		hash_db = consultas.qry_iniciar_sesion(email)
+		if bcrypt.checkpw(password.encode(), hash_db[0].encode()):
+				print("IGUAL", file=sys.stderr)
+		else:
+				print("NO IGUAL", file=sys.stderr)
 		if email == "pac123@gmail.com" and password == "pac12022":
 			tip = "PACIENTE"
 			name = "EDWIN MONTES MEZA"
@@ -70,7 +76,7 @@ def recuperar_password():
 @app.route('/registro/')
 def registro():
 	botonesSesion()
-	tipo_docs = qry_soporte("DOCS")
+	tipo_docs = consultas.qry_soporte("DOCS")
 	return render_template("registro.html", tipo_docs = tipo_docs)
 
 @app.route('/registrarUsuario', methods=['POST'])
@@ -78,13 +84,10 @@ def registrar():
 	try:
 		email    = request.form['email']
 		password = request.form['password']
-		salt = bcrypt.gensalt()
-		hash = bcrypt.hashpw(password.encode(), salt)
-		if bcrypt.checkpw(password.encode(), hash):
-			msg = "IGUAL"
-		else:
-			msg = "NO IGUAL"
-		yag = yagmail.SMTP('godred12994@gmail.com', 'Easy1234#') 
+		hash = funciones.crear_hash(password)
+		h = hash.decode("utf-8")
+		print(hash, file=sys.stderr)
+		consultas.qry_registrar_usuario("EDWIN", "MONTES", email, h)
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta ')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
@@ -152,17 +155,3 @@ def botonesSesion():
 	flash(botonesDeSesion, "botonesDeSesion")
 	flash(botonBienvenido, "botonBienvenido")
 	
-def sql_connection():
-    try:
-        con =  sqlite3.connect('hospital.db')
-        return con;
-    except Error:
-        print(Error)
-
-def qry_soporte(cod):
-        strsql = "select * FROM soporte WHERE sop_cod = '" + cod + "'"
-        con = sql_connection()
-        cursorObj = con.cursor()
-        cursorObj.execute(strsql)
-        result = cursorObj.fetchall()
-        return result
