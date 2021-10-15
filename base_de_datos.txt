@@ -5,16 +5,19 @@ SOPORTE--------------------------------
   sop_estado char(1)
   
 USUARIOS------------------------------
-  usu_id        int(10)      PK
-  usu_cedula    int(20)      UK
-  usu_tipo_doc  char(1)
-  usu_nombres   varchar(200)
-  usu_apellidos varchar(200)
-  usu_email     varchar(300)
-  usu_password  varchar(50)
+  usu_id         int(10)      PK
+  usu_cedula     int(20)      UK
+  usu_tipo_doc   char(1)
+  usu_nombres    varchar(200)
+  usu_apellidos  varchar(200)
+  usu_email      varchar(300)
+  usu_token      varchar(128)
+  usu_token_reco varchar(50)
+  usu_hash_pass  varchar(128)
   usu_edad      
   usu_direccion
-  usu_sexo      char(1)
+  usu_sexo       char(1)
   usu_fecha_nac 
-  usu_estado    char(1)
+  usu_created_at date
+  usu_estado     char(1)
 

@@ -1,8 +1,5 @@
-import os
-import yagmail as yagmail
-import funciones
+import funciones, os, secrets, hashlib, uuid, sqlite3, yagmail as yagmail, bcrypt
 from flask import Flask, render_template, flash, request, session, Markup, redirect
-import sqlite3
 from sqlite3 import Error
 
 app = Flask(__name__)
@@ -23,6 +20,7 @@ def raiz():
 @app.route('/inicio/')
 def inicio():
 	botonesSesion()
+	token = secrets.token_hex(40)
 	return render_template("inicio.html")
 
 @app.route('/iniciarSesion', methods=['POST'])
@@ -78,16 +76,21 @@ def registro():
 @app.route('/registrarUsuario', methods=['POST'])
 def registrar():
 	try:
-		email    = request.form['email'];
-		password = request.form['password'];
+		email    = request.form['email']
+		password = request.form['password']
+		salt = bcrypt.gensalt()
+		hash = bcrypt.hashpw(password.encode(), salt)
+		if bcrypt.checkpw(password.encode(), hash):
+			msg = "IGUAL"
+		else:
+			msg = "NO IGUAL"
 		yag = yagmail.SMTP('godred12994@gmail.com', 'Easy1234#') 
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta ')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
-		return ({'status':sts,'msg':msg,'pass':password});
+		return ({'status':sts,'msg':msg,'pass':password})
 	except Exception as e:
-		msg = e
-		return ({'status':'FAIL','msg':msg,'pass':password});
+		return ({'status':'FAIL','msg':e, 'pass':password})
 
 @app.route('/panel/')
 def panel():
