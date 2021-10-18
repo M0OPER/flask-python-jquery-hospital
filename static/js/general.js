@@ -14,8 +14,8 @@
                 showMensaje("#msgIngresar", "Ok");
                 location.reload();
               }else if(response.status == "FAIL"){
-                $("#msgRegistro #mensajeFail").text(response.msg);
-                showMensaje("#msgRegistro", "Fail");
+                $("#msgIngresar #mensajeFail").text(response.msg);
+                showMensaje("#msgIngresar", "Fail");
               }
             },
             error: function(error) {

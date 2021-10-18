@@ -82,18 +82,24 @@ def registro():
 @app.route('/registrarUsuario', methods=['POST'])
 def registrar():
 	try:
-		email    = request.form['email']
-		password = request.form['password']
-		hash = funciones.crear_hash(password)
-		h = hash.decode("utf-8")
-		print(hash, file=sys.stderr)
-		consultas.qry_registrar_usuario("EDWIN", "MONTES", email, h)
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta ')
+		nombres   = request.form['nomb']
+		apellidos = request.form['apel']
+		#tipo_doc  = request.form['tipd']
+		num_doc   = request.form['numd']
+		email     = request.form['emai']
+		telefono  = request.form['tele']
+		direccion = request.form['dire']
+		password  = request.form['pass']
+		token = bcrypt.gensalt()
+		hash = funciones.crear_hash(password).decode("utf-8")
+		consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, hash, "5", "8")
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/registro/' + token.decode("utf-8"))
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
-		return ({'status':sts,'msg':msg,'pass':password})
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
-		return ({'status':'FAIL','msg':e, 'pass':password})
+		print(e, file=sys.stderr)
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/panel/')
 def panel():

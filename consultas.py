@@ -1,5 +1,5 @@
 from sqlite3 import Error
-import sqlite3
+import sqlite3, sys
 def sql_connection():
     try:
         msg =  sqlite3.connect('hospital.db')
@@ -29,13 +29,14 @@ def qry_iniciar_sesion(email):
   except Error as e:
     return "Error al guardar datos"
 
-def qry_registrar_usuario(nombres, apellidos, email, hash):
+def qry_registrar_usuario(nombres, apellidos, tipo_doc, num_doc, email, telefono, direccion, hash, rol, estado):
   try:
-    qry = "INSERT INTO usuarios (usu_nombres, usu_apellidos, usu_email, usu_hash_pass) VALUES ('" + nombres + "', '" + apellidos + "', '" + email + "', '" + hash + "');"
+    qry = "INSERT INTO usuarios (usu_nombres, usu_apellidos, usu_tipo_doc, usu_identificacion, usu_email, usu_telefono, usu_direccion, usu_hash_pass, usu_tipo_usu, usu_estado) VALUES ('" + nombres + "', '" + apellidos + "', " + tipo_doc + ", " + num_doc + ", '" + email + "', " + telefono + ", '" + direccion + "', '" + hash + "', " + rol + ", " + estado + ");"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
     con.commit()
     con.close()
   except Error as e:
-    return "Error al guardar datos"
+    print(e, file=sys.stderr)
+    
