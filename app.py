@@ -90,16 +90,35 @@ def registrar():
 		telefono  = request.form['tele']
 		direccion = request.form['dire']
 		password  = request.form['pass']
-		token = bcrypt.gensalt()
+		token = bcrypt.gensalt().decode("utf-8")
 		hash = funciones.crear_hash(password).decode("utf-8")
-		consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, hash, "5", "8")
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/registro/' + token.decode("utf-8"))
+		consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, token, hash, "5", "8")
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
 	except Exception as e:
 		print(e, file=sys.stderr)
 		return ({'status':'FAIL','msg':e})
+
+@app.route('/activar/', methods=['GET'])
+def activarCuenta():
+	try:
+		if request.method == 'GET':
+			token = request.args.get('token')
+			datos = token.split(":::")
+			email = datos[0]
+			token = datos[1]
+			result = consultas.qry_verificar_token(email, token)
+			if result:
+				msg = consultas.qry_activar_cuenta(email, token)
+			else:
+				msg = "El token de acceso ha expirado o no existe"
+			return msg
+		else:
+			return "Error en el sistema, reintentelo mas tarde"
+	except Exception as e:
+		return "Error en el sistema, reintentelo mas tarde"
 
 @app.route('/panel/')
 def panel():
