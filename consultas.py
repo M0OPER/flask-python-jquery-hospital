@@ -20,7 +20,7 @@ def qry_soporte(cod):
   
 def qry_iniciar_sesion(email):
   try:
-    qry = "SELECT usu_hash_pass FROM usuarios WHERE usu_email = '" + email + "'"
+    qry = "SELECT usu_hash_pass, usu_apellidos, sop_datos, usu_estado FROM usuarios, soporte WHERE usu_email = '" + email +"' AND usu_tipo_usu = sop_id"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

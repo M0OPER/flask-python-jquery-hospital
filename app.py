@@ -32,30 +32,25 @@ def iniciarSesion():
 		msg = "Acceso concedido" 
 		sts = "OK"
 		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
-		email    = request.form['email']
-		password = request.form['password']
-		hash_db = consultas.qry_iniciar_sesion(email)
-		if bcrypt.checkpw(password.encode(), hash_db[0].encode()):
-				print("IGUAL", file=sys.stderr)
+		email       = request.form['email']
+		password    = request.form['password']
+		datos       = consultas.qry_iniciar_sesion(email)
+		hash_db     = datos[0]
+		apellidos   = datos[1]
+		tip_usuario = datos[2]
+		estado      = datos[3]
+		if bcrypt.checkpw(password.encode(), hash_db.encode()):
+			if tip_usuario == "ADMINISTRADOR":
+				session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
+			sts = "OK"
+			msg = "Bienvenido al sistema"
+			funciones.iniciarSesion(tip_usuario, apellidos, estado)
 		else:
-				print("NO IGUAL", file=sys.stderr)
-		if email == "pac123@gmail.com" and password == "pac12022":
-			tip = "PACIENTE"
-			name = "EDWIN MONTES MEZA"
-		elif email == "med45@hotmail.com":
-			tip = "MEDICO"
-			name = "JAIME POLO"
-		elif email == "admin@simon_bolivar.com":
-			tip = "ADMINISTRADOR"
-			name = "BEIMAN JOSÉ"
-			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
-		else:
-			msg = "Usuario o contraseña incorrecta"
 			sts = "FAIL"
-		funciones.iniciarSesion(tip, name)
-		return ({'status':sts,'msg':msg,'tip':tip, 'name':name});
+			msg = "Correo o contraseña incorrecta"
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
-		return ({'status':'FAIL','msg':e});
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/cerrarSesion', methods=['POST'])
 def cerrarSesion():
@@ -126,13 +121,16 @@ def panel():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		flash(session["paneles"], "paneles")
-		if session["tipo_usuario"] == "ADMINISTRADOR":
-			return render_template('/administrador.html')
-		elif session["tipo_usuario"] == "MEDICO":
-			return render_template('/medicos.html')
-		elif session["tipo_usuario"] == "PACIENTE":
-			return render_template('/pacientes.html')
+		if session["estado"] == 7:
+			return redirect("/usuario")
+		else:
+			flash(session["paneles"], "paneles")
+			if session["tipo_usuario"] == "ADMINISTRADOR":
+				return render_template('/administrador.html')
+			elif session["tipo_usuario"] == "MEDICO":
+				return render_template('/medicos.html')
+			elif session["tipo_usuario"] == "PACIENTE":
+				return render_template('/pacientes.html')
 			
 @app.route('/panel/administrador')
 def panel_administrador():
@@ -152,9 +150,24 @@ def panel_pacientes():
 @app.route('/usuario/')
 def usuario():
 	botonesSesion()
+	if session["online"] == False :
+		return redirect("/inicio")
+	else:
+		if session["estado"] == 7:
+			return redirect("/onlyUpdateUser")
+		else:
+			return render_template('usuario.html')
+	
+@app.route('/onlyUpdateUser/')
+def onlyUpdateUser():
+	botonesSesion()
 	if session["online"] == False:
 		return redirect("/inicio")
-	return render_template('usuario.html')
+	else:
+		if session["estado"] == 7:
+			return render_template('onlyUpdateUser.html')
+		else:
+			return redirect("/usuario")
 
 @app.route('/contactos/')
 def contactos():

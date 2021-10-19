@@ -10,10 +10,11 @@ def verificarSesion():
 		msg = "Bienvenido al sistema"
 	return msg
 
-def iniciarSesion(tip, name):
+def iniciarSesion(tip, name, estado):
 	try:
 		session["tipo_usuario"] = tip
 		session["name"] = name
+		session["estado"] = estado
 		session["online"] = True
 	except Exception as e:
 		return e
