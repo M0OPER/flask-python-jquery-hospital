@@ -35,10 +35,24 @@ def qry_registrar_usuario(nombres, apellidos, tipo_doc, num_doc, email, telefono
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
+    last_id = cursorObj.lastrowid
     con.commit()
     con.close()
+    return last_id
   except Error as e:
     print(e, file=sys.stderr)
+
+def qry_registrar_userId(id, rol, usuario):
+  try:
+    qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id) VALUES (" + id + ");"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Guardada con exito"
+  except Error as e:
+    print("error", file=sys.stderr)
 
 def qry_verificar_token(email, token):
   try:
@@ -54,7 +68,7 @@ def qry_verificar_token(email, token):
 
 def qry_activar_cuenta(email, token):
   try:
-    qry = "UPDATE usuarios SET usu_estado = 7, usu_token = '' WHERE usu_email = '" + email + "' AND usu_token = '" + token + "'"
+    qry = "UPDATE usuarios SET usu_estado = 10, usu_token = '' WHERE usu_email = '" + email + "' AND usu_token = '" + token + "'"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

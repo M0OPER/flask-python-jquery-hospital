@@ -58,10 +58,10 @@ def cerrarSesion():
 		session.clear()
 		msg = "Sesion cerrada con exito"
 		sts = "OK"
-		return ({'status':sts,'msg':msg});
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
 		msg = e
-		return ({'status':'FAIL','msg':msg});
+		return ({'status':'FAIL','msg':msg})
 
 @app.route('/recuperar_password/')
 def recuperar_password():
@@ -87,13 +87,13 @@ def registrar():
 		password  = request.form['pass']
 		token = bcrypt.gensalt().decode("utf-8")
 		hash = funciones.crear_hash(password).decode("utf-8")
-		consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, token, hash, "5", "8")
+		last_id = consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, token, hash, "5", "8")
+		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac")
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
 	except Exception as e:
-		print(e, file=sys.stderr)
 		return ({'status':'FAIL','msg':e})
 
 @app.route('/activar/', methods=['GET'])
@@ -121,8 +121,14 @@ def panel():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		if session["estado"] == 7:
-			return redirect("/usuario")
+		boton = '<a href="/inicio"><button type="button"><h2>REGRESAR A INICIO</h2></button></a>'
+		if session["estado"] == 8:
+			session.clear()
+			return boton + '<h3>Usted no ha activado su cuenta, el link de activacion fue enviado a su cuenta de correo electronico registrada</h3>'
+		elif session["estado"] == 9:
+			session.clear()
+			sesion = funciones.verificarSesion()
+			return boton + '<h3>Usuario bloqueado, intente contactar via correo con el administrador</h3>'
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
@@ -150,24 +156,10 @@ def panel_pacientes():
 @app.route('/usuario/')
 def usuario():
 	botonesSesion()
-	if session["online"] == False :
-		return redirect("/inicio")
-	else:
-		if session["estado"] == 7:
-			return redirect("/onlyUpdateUser")
-		else:
-			return render_template('usuario.html')
-	
-@app.route('/onlyUpdateUser/')
-def onlyUpdateUser():
-	botonesSesion()
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		if session["estado"] == 7:
-			return render_template('onlyUpdateUser.html')
-		else:
-			return redirect("/usuario")
+		return render_template('usuario.html')
 
 @app.route('/contactos/')
 def contactos():

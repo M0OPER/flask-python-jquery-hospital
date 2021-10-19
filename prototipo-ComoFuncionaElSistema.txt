@@ -2,8 +2,6 @@ USUARIO Y CONTRASEÑA PARA EL LOGIN
 
 =>Para ingresar al sistema registra un paciente como normalmente lo haria, active la cuenta desde el correo registrado
 
-=>Para poder ingresar al dashboard se necesita actualizar los datos por primera vez
-
 =>En el caso del medico nunca se habló de su registro, por lógica los registra el superadministrador
 
 =>EN el caso del administrador el usuario y contraseña ya los cree manualmente ya que es el superusuario
