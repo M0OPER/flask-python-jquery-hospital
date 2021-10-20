@@ -1,6 +1,6 @@
-import funciones, consultas, os, secrets, yagmail as yagmail
+import funciones, consultas, os, secrets, yagmail as yagmail, time, bcrypt
 from flask import Flask, render_template, flash, request, session, Markup, redirect
-import sys, bcrypt
+import sys
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -27,18 +27,19 @@ def inicio():
 @app.route('/iniciarSesion', methods=['POST'])
 def iniciarSesion():
 	try:
-		tip = ""
-		name = ""
-		msg = "Acceso concedido" 
-		sts = "OK"
+		tip                = ""
+		name               = ""
+		msg                = "Acceso concedido" 
+		sts                = "OK"
 		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
-		email       = request.form['email']
-		password    = request.form['password']
-		datos       = consultas.qry_iniciar_sesion(email)
-		hash_db     = datos[0]
-		apellidos   = datos[1]
-		tip_usuario = datos[2]
-		estado      = datos[3]
+		email              = request.form['email']
+		password           = request.form['password']
+		datos              = consultas.qry_iniciar_sesion(email)
+		session["id"]      = datos[0]
+		hash_db            = datos[1]
+		apellidos          = datos[2]
+		tip_usuario        = datos[3]
+		estado             = datos[4]
 		if bcrypt.checkpw(password.encode(), hash_db.encode()):
 			if tip_usuario == "ADMINISTRADOR":
 				session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
@@ -85,10 +86,11 @@ def registrar():
 		telefono  = request.form['tele']
 		direccion = request.form['dire']
 		password  = request.form['pass']
+		fecha = time.strftime("%d/%m/%y")
 		token = bcrypt.gensalt().decode("utf-8")
 		hash = funciones.crear_hash(password).decode("utf-8")
-		last_id = consultas.qry_registrar_usuario(nombres, apellidos, "1", num_doc, email, telefono, direccion, token, hash, "5", "8")
-		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac")
+		last_id = consultas.qry_registrar_usuario(email, token, hash, fecha, "5", "8")
+		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac", num_doc, "1", nombres, apellidos, telefono, direccion)
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
@@ -132,26 +134,18 @@ def panel():
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
+				
 				return render_template('/administrador.html')
 			elif session["tipo_usuario"] == "MEDICO":
 				return render_template('/medicos.html')
 			elif session["tipo_usuario"] == "PACIENTE":
-				return render_template('/pacientes.html')
-			
-@app.route('/panel/administrador')
-def panel_administrador():
-	botonesSesion()
-	return render_template("administrador.html")
-
-@app.route('/panel/medicos')
-def panel_medicos():
-	botonesSesion()
-	return render_template("medicos.html")
-
-@app.route('/panel/pacientes')
-def panel_pacientes():
-	botonesSesion()
-	return render_template("pacientes.html")
+				session["codigo"] = consultas.qry_session_id(str(session["id"]), "pacientes", "pac")[0]
+				tipo_citas = consultas.qry_soporte("CITP")
+				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "estado_id", "")
+				print(listado_citas, file=sys.stderr)
+				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, i = 0)
+			else:
+				return "Error dentro del servidor"
 
 @app.route('/usuario/')
 def usuario():
