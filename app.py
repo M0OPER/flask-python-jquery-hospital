@@ -1,12 +1,10 @@
-import os
-import yagmail as yagmail
-import funciones
+import funciones, consultas, os, secrets, yagmail as yagmail, time, bcrypt
 from flask import Flask, render_template, flash, request, session, Markup, redirect
-import sqlite3
-from sqlite3 import Error
+import sys
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+yag = yagmail.SMTP('godred12994@gmail.com', 'Easy1234#') 
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -23,35 +21,37 @@ def raiz():
 @app.route('/inicio/')
 def inicio():
 	botonesSesion()
+	token = secrets.token_hex(40)
 	return render_template("inicio.html")
 
 @app.route('/iniciarSesion', methods=['POST'])
 def iniciarSesion():
 	try:
-		tip = ""
-		name = ""
-		msg = "Acceso concedido" 
-		sts = "OK"
+		tip                = ""
+		name               = ""
+		msg                = "Acceso concedido" 
+		sts                = "OK"
 		session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li>')
-		email    = request.form['email'];
-		password = request.form['password'];
-		if email == "pac123@gmail.com" and password == "pac12022":
-			tip = "PACIENTE"
-			name = "EDWIN MONTES MEZA"
-		elif email == "med45@hotmail.com":
-			tip = "MEDICO"
-			name = "JAIME POLO"
-		elif email == "admin@simon_bolivar.com":
-			tip = "ADMINISTRADOR"
-			name = "BEIMAN JOSÉ"
-			session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
+		email              = request.form['email']
+		password           = request.form['password']
+		datos              = consultas.qry_iniciar_sesion(email)
+		session["id"]      = datos[0]
+		hash_db            = datos[1]
+		apellidos          = datos[2]
+		tip_usuario        = datos[3]
+		estado             = datos[4]
+		if bcrypt.checkpw(password.encode(), hash_db.encode()):
+			if tip_usuario == "ADMINISTRADOR":
+				session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
+			sts = "OK"
+			msg = "Bienvenido al sistema"
+			funciones.iniciarSesion(tip_usuario, apellidos, estado)
 		else:
-			msg = "Usuario o contraseña incorrecta"
 			sts = "FAIL"
-		funciones.iniciarSesion(tip, name)
-		return ({'status':sts,'msg':msg,'tip':tip, 'name':name});
+			msg = "Correo o contraseña incorrecta"
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
-		return ({'status':'FAIL','msg':e});
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/cerrarSesion', methods=['POST'])
 def cerrarSesion():
@@ -59,10 +59,10 @@ def cerrarSesion():
 		session.clear()
 		msg = "Sesion cerrada con exito"
 		sts = "OK"
-		return ({'status':sts,'msg':msg});
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
 		msg = e
-		return ({'status':'FAIL','msg':msg});
+		return ({'status':'FAIL','msg':msg})
 
 @app.route('/recuperar_password/')
 def recuperar_password():
@@ -72,22 +72,50 @@ def recuperar_password():
 @app.route('/registro/')
 def registro():
 	botonesSesion()
-	tipo_docs = qry_soporte("DOCS")
+	tipo_docs = consultas.qry_soporte("DOCS")
 	return render_template("registro.html", tipo_docs = tipo_docs)
 
 @app.route('/registrarUsuario', methods=['POST'])
 def registrar():
 	try:
-		email    = request.form['email'];
-		password = request.form['password'];
-		yag = yagmail.SMTP('godred12994@gmail.com', 'Easy1234#') 
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta ')
+		nombres   = request.form['nomb']
+		apellidos = request.form['apel']
+		#tipo_doc  = request.form['tipd']
+		num_doc   = request.form['numd']
+		email     = request.form['emai']
+		telefono  = request.form['tele']
+		direccion = request.form['dire']
+		password  = request.form['pass']
+		fecha = time.strftime("%d/%m/%y")
+		token = bcrypt.gensalt().decode("utf-8")
+		hash = funciones.crear_hash(password).decode("utf-8")
+		last_id = consultas.qry_registrar_usuario(email, token, hash, fecha, "5", "8")
+		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac", num_doc, "1", nombres, apellidos, telefono, direccion)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
-		return ({'status':sts,'msg':msg,'pass':password});
+		return ({'status':sts,'msg':msg})
 	except Exception as e:
-		msg = e
-		return ({'status':'FAIL','msg':msg,'pass':password});
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/activar/', methods=['GET'])
+def activarCuenta():
+	try:
+		if request.method == 'GET':
+			token = request.args.get('token')
+			datos = token.split(":::")
+			email = datos[0]
+			token = datos[1]
+			result = consultas.qry_verificar_token(email, token)
+			if result:
+				msg = consultas.qry_activar_cuenta(email, token)
+			else:
+				msg = "El token de acceso ha expirado o no existe"
+			return msg
+		else:
+			return "Error en el sistema, reintentelo mas tarde"
+	except Exception as e:
+		return "Error en el sistema, reintentelo mas tarde"
 
 @app.route('/panel/')
 def panel():
@@ -95,35 +123,37 @@ def panel():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		flash(session["paneles"], "paneles")
-		if session["tipo_usuario"] == "ADMINISTRADOR":
-			return render_template('/administrador.html')
-		elif session["tipo_usuario"] == "MEDICO":
-			return render_template('/medicos.html')
-		elif session["tipo_usuario"] == "PACIENTE":
-			return render_template('/pacientes.html')
-			
-@app.route('/panel/administrador')
-def panel_administrador():
-	botonesSesion()
-	return render_template("administrador.html")
-
-@app.route('/panel/medicos')
-def panel_medicos():
-	botonesSesion()
-	return render_template("medicos.html")
-
-@app.route('/panel/pacientes')
-def panel_pacientes():
-	botonesSesion()
-	return render_template("pacientes.html")
+		boton = '<a href="/inicio"><button type="button"><h2>REGRESAR A INICIO</h2></button></a>'
+		if session["estado"] == 8:
+			session.clear()
+			return boton + '<h3>Usted no ha activado su cuenta, el link de activacion fue enviado a su cuenta de correo electronico registrada</h3>'
+		elif session["estado"] == 9:
+			session.clear()
+			sesion = funciones.verificarSesion()
+			return boton + '<h3>Usuario bloqueado, intente contactar via correo con el administrador</h3>'
+		else:
+			flash(session["paneles"], "paneles")
+			if session["tipo_usuario"] == "ADMINISTRADOR":
+				
+				return render_template('/administrador.html')
+			elif session["tipo_usuario"] == "MEDICO":
+				return render_template('/medicos.html')
+			elif session["tipo_usuario"] == "PACIENTE":
+				session["codigo"] = consultas.qry_session_id(str(session["id"]), "pacientes", "pac")[0]
+				tipo_citas = consultas.qry_soporte("CITP")
+				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "estado_id", "")
+				print(listado_citas, file=sys.stderr)
+				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, i = 0)
+			else:
+				return "Error dentro del servidor"
 
 @app.route('/usuario/')
 def usuario():
 	botonesSesion()
 	if session["online"] == False:
 		return redirect("/inicio")
-	return render_template('usuario.html')
+	else:
+		return render_template('usuario.html')
 
 @app.route('/contactos/')
 def contactos():
@@ -149,17 +179,3 @@ def botonesSesion():
 	flash(botonesDeSesion, "botonesDeSesion")
 	flash(botonBienvenido, "botonBienvenido")
 	
-def sql_connection():
-    try:
-        con =  sqlite3.connect('hospital.db')
-        return con;
-    except Error:
-        print(Error)
-
-def qry_soporte(cod):
-        strsql = "select * FROM soporte WHERE sop_cod = '" + cod + "'"
-        con = sql_connection()
-        cursorObj = con.cursor()
-        cursorObj.execute(strsql)
-        result = cursorObj.fetchall()
-        return result

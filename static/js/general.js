@@ -12,10 +12,10 @@
                 $("#msgIngresar #mensajeOk").text(response.msg);
                 $('#modalIniciarSesion').modal('show');
                 showMensaje("#msgIngresar", "Ok");
-                location.reload();
+                window.location.href = '/panel';
               }else if(response.status == "FAIL"){
-                $("#msgRegistro #mensajeFail").text(response.msg);
-                showMensaje("#msgRegistro", "Fail");
+                $("#msgIngresar #mensajeFail").text(response.msg);
+                showMensaje("#msgIngresar", "Fail");
               }
             },
             error: function(error) {
