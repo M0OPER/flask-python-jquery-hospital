@@ -92,7 +92,7 @@ def qry_activar_cuenta(email, token):
 
 def qry_listar_citas_paciente(id, tipo, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = 1 AND cit_medico_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id"
+    qry = "SELECT cit_id, sop_datos, med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = 1 AND cit_medico_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -102,4 +102,68 @@ def qry_listar_citas_paciente(id, tipo, texto):
   except Error as e:
     print(e, file=sys.stderr)
     return "Error al cargar datos"
+
+#DETALLES CITAS
+def qry_cargar_especialidades_solicitar_cita():
+  try:
+    qry = "SELECT sop_id, sop_datos FROM soporte WHERE sop_cod = 'ESPE'"
+    con = sql_connection()
+    cur = con.cursor()
+    cur.execute(qry)
+    result = cur.fetchall()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_cargar_medicos_solicitar_cita(especialidad):
+  try:
+    qry = "SELECT med_id, med_nombres || ' ' || med_apellidos as nombres FROM medicos WHERE med_especialidad_id =" + especialidad
+    con = sql_connection()
+    cur = con.cursor()
+    cur.execute(qry)
+    result = cur.fetchall()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_detalles_cita_paciente(id):
+  try:
+    qry = "SELECT sop_datos, med_nombres, med_apellidos, pac_nombres, pac_apellidos, cit_fecha_hora, cit_detalle FROM citas, medicos, soporte, pacientes WHERE cit_paciente_id = 1 AND cit_id = " + id + " AND cit_medico_id = med_id AND cit_estado = sop_id AND cit_paciente_id = pac_id"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_solicitar_cita(paciente, medico, fechaHora, fecha, detalle):
+  try:
+    qry = "INSERT INTO citas (cit_paciente_id, cit_medico_id, cit_fecha_hora, cit_created_at, cit_detalle, cit_estado) VALUES (" + paciente + ", " + medico + ", '" + fechaHora + "', '" + fecha + "', '" + detalle + "', 13)"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    last_id = cursorObj.lastrowid
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_cancelar_cita(id):
+  try:
+    qry = "UPDATE citas SET cit_estado = 14 WHERE cit_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cancelar cita"
     

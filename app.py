@@ -35,7 +35,7 @@ def iniciarSesion():
 		email              = request.form['email']
 		password           = request.form['password']
 		datos              = consultas.qry_iniciar_sesion(email)
-		session["id"]      = datos[0]
+		id     						 = datos[0]
 		hash_db            = datos[1]
 		apellidos          = datos[2]
 		tip_usuario        = datos[3]
@@ -45,7 +45,7 @@ def iniciarSesion():
 				session["paneles"] = Markup('<li class="nav-item"><a class="nav-link active" id="citas-tab" data-toggle="tab" href="#citas" role="tab" aria-controls="citas" aria-selected="true">CITAS</a></li><li class="nav-item"><a class="nav-link" id="medicos-tab" data-toggle="tab" href="#medicos" role="tab" aria-controls="medicos" aria-selected="false">MEDICOS</a></li><li class="nav-item"><a class="nav-link" id="pacientes-tab" data-toggle="tab" href="#pacientes" role="tab" aria-controls="pacientes" aria-selected="false">PACIENTES</a></li>')
 			sts = "OK"
 			msg = "Bienvenido al sistema"
-			funciones.iniciarSesion(tip_usuario, apellidos, estado)
+			funciones.iniciarSesion(tip_usuario, apellidos, estado, id)
 		else:
 			sts = "FAIL"
 			msg = "Correo o contraseña incorrecta"
@@ -86,9 +86,9 @@ def registrar():
 		telefono  = request.form['tele']
 		direccion = request.form['dire']
 		password  = request.form['pass']
-		fecha = time.strftime("%d/%m/%y")
-		token = bcrypt.gensalt().decode("utf-8")
-		hash = funciones.crear_hash(password).decode("utf-8")
+		fecha   = time.strftime("%Y-%m-%d")
+		token   = bcrypt.gensalt().decode("utf-8")
+		hash    = funciones.crear_hash(password).decode("utf-8")
 		last_id = consultas.qry_registrar_usuario(email, token, hash, fecha, "5", "8")
 		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac", num_doc, "1", nombres, apellidos, telefono, direccion)
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
@@ -134,16 +134,14 @@ def panel():
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
-				
 				return render_template('/administrador.html')
 			elif session["tipo_usuario"] == "MEDICO":
 				return render_template('/medicos.html')
 			elif session["tipo_usuario"] == "PACIENTE":
-				session["codigo"] = consultas.qry_session_id(str(session["id"]), "pacientes", "pac")[0]
+				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "pacientes", "pac")[0]
 				tipo_citas = consultas.qry_soporte("CITP")
 				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "estado_id", "")
-				print(listado_citas, file=sys.stderr)
-				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, i = 0)
+				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"])
 			else:
 				return "Error dentro del servidor"
 
@@ -172,10 +170,67 @@ def botonesSesion():
 	botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info d-none">DASHBOARD</button></a>')
 	botonesDeSesion = Markup('<button id="btnIniciarSesion" type="button" class="btn btn-light" data-toggle="modal" data-target="#modalIniciarSesion">Iniciar sesion</button>')
 	if sesion == "PACIENTE" or sesion == "MEDICO" or sesion == "ADMINISTRADOR":
-		botonBienvenido = (	session["name"] + "-" + sesion)
+		botonBienvenido = (session["name"] + " - " + sesion)
 		botonPanel = Markup('<a href="/panel"><button type="button" class="btn btn-info">DASHBOARD</button></a>')
 		botonesDeSesion = Markup('<button id="csCerrarSesion" type="button" class="btn btn-light">Cerrar sesion</button><a href="/usuario"><i class="bi bi-gear-fill close manita" aria-label="Close"></i></a>')
 	flash(botonPanel, "botonPanel")
 	flash(botonesDeSesion, "botonesDeSesion")
 	flash(botonBienvenido, "botonBienvenido")
-	
+
+#DETALLES CITAS
+@app.route('/cargarEspecialidadesSolicitarCita', methods=['POST'])
+def cargarEspecialidadesSolicitarCita():
+	try:
+		datos  = consultas.qry_cargar_especialidades_solicitar_cita()
+		msg = "Datos cargados correctamente"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/cargarMedicosSolicitarCita', methods=['POST'])
+def cargarMedicosSolicitarCita():
+	try:
+		especialidad  = request.form['espe']
+		datos  				= consultas.qry_cargar_medicos_solicitar_cita(especialidad)
+		msg = "Datos cargados correctamente"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+		
+@app.route('/detallesCitaPaciente', methods=['POST'])
+def detallesCitaPaciente():
+	try:
+		idCita  = request.form['idCita']
+		datos = consultas.qry_detalles_cita_paciente(idCita)
+		msg = "Datos cargados correctamente"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/solicitarCita', methods=['POST'])
+def solicitarCita():
+	try:
+		medico 			 = request.form['medi']
+		fechahora    = request.form['fechaHora']
+		fecha   		 = time.strftime("%Y-%m-%d")
+		detalle			 = request.form['deta']
+		consultas.qry_solicitar_cita(str(session["codigo"]), medico, fechahora, fecha, detalle)
+		msg = "Datos cargados correctamente"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/cancelarCita', methods=['POST'])
+def cancelarCita():
+	try:
+		cita = request.form['cita']
+		consultas.qry_cancelar_cita(cita)
+		msg = "Cita cancelada"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})

@@ -10,12 +10,22 @@ def verificarSesion():
 		msg = "Bienvenido al sistema"
 	return msg
 
-def iniciarSesion(tip, name, estado):
+def iniciarSesion(tip, name, estado, id):
 	try:
 		session["tipo_usuario"] = tip
 		session["name"] = name
 		session["estado"] = estado
+		session["id_usuario"] = id
 		session["online"] = True
+		if tip == "PACIENTE":
+			session["rol"] = "pac"
+			session["usuario"] = "pacientes"
+		elif tip == "MEDICO":
+			session["rol"] = "med"
+			session["usuario"] = "medicos"
+		elif tip == "ADMINISTRADOR":
+			session["rol"] = "adm"
+			session["usuario"] = "administradores"
 	except Exception as e:
 		return e
 

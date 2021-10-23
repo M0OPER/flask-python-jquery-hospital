@@ -32,5 +32,47 @@
   {% block panel_pacientes %}
 
   {% endblock %}
- <script type="text/javascript" src="../static/js/bodyPanel.js"></script>
+  <!-- Modal Detalles Cita-->
+<div class="modal fade" id="modalDetallesCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        DETALLES CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      </div>
+      <div class="modal-body">
+        <form>
+          <fieldset disabled>
+            <div class="form-group">
+              <label for="dcPaciente">Paciente</label>
+              <input type="text" id="dcPaciente" class="form-control" placeholder="Paciente">
+            </div>
+            <div class="form-group">
+              <label for="dcMedico">Médico</label>
+              <input type="text" id="dcMedico" class="form-control" placeholder="Medico">
+            </div>
+            <div class="form-group">
+              <label for="dti_fecha">Fecha</label>
+              <input type="text" id="dti_fecha" class="form-control" placeholder="04/11/2021">
+            </div>
+            <div class="form-group">
+              <label for="dti_hora">Hora</label>
+              <input type="text" id="dti_hora" class="form-control" placeholder="10:50 a.m.">
+            </div>
+            <div class="form-group">
+              <label for="dti_detalles">Detalles</label>
+              <textarea id="dti_detalles" class="form-control" rows="2">
+              </textarea>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+        <div id="msgDetallesCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        {% block detalle_cita %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+<div id="msgPanel"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+<script type="text/javascript" src="../static/js/bodyPanel.js"></script>
 {% endblock %}
