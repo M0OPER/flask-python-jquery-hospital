@@ -20,7 +20,7 @@ def qry_soporte(cod):
   
 def qry_iniciar_sesion(email):
   try:
-    qry = "SELECT usu_id, usu_hash_pass, pac_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN pacientes on usu_id = pac_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id UNION SELECT usu_id, usu_hash_pass, med_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN medicos on usu_id = med_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id UNION SELECT usu_id, usu_hash_pass, adm_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN administradores on usu_id = adm_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id"
+    qry = "SELECT usu_id, usu_hash_pass, pac_nombres || ' ' || pac_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN pacientes on usu_id = pac_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id UNION SELECT usu_id, usu_hash_pass, med_nombres || ' ' || med_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN medicos on usu_id = med_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id UNION SELECT usu_id, usu_hash_pass, adm_nombres || ' ' || adm_apellidos, sop_datos, usu_estado FROM usuarios, soporte INNER JOIN administradores on usu_id = adm_usuario_id WHERE usu_email = '" + email + "' AND usu_tipo_usu = sop_id"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
