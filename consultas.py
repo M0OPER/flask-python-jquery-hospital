@@ -92,7 +92,20 @@ def qry_activar_cuenta(email, token):
 
 def qry_listar_citas_paciente(id, tipo, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = 1 AND cit_medico_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_listar_citas_medico(id, tipo, texto):
+  try:
+    qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -130,7 +143,7 @@ def qry_cargar_medicos_solicitar_cita(especialidad):
 
 def qry_detalles_cita_paciente(id):
   try:
-    qry = "SELECT sop_datos, med_nombres, med_apellidos, pac_nombres, pac_apellidos, cit_fecha_hora, cit_detalle FROM citas, medicos, soporte, pacientes WHERE cit_paciente_id = 1 AND cit_id = " + id + " AND cit_medico_id = med_id AND cit_estado = sop_id AND cit_paciente_id = pac_id"
+    qry = "SELECT sop_datos, med_nombres, med_apellidos, pac_nombres, pac_apellidos, cit_fecha_hora, cit_detalle, IFNULL(his_texto, ''), IFNULL(com_texto_paciente, ''), IFNULL(com_texto_medico, '') FROM citas, medicos, soporte, pacientes LEFT JOIN historia ON cit_id = his_cita_id LEFT JOIN comentarios ON cit_id = com_cita_id WHERE cit_id = " + id + " AND cit_medico_id = med_id AND cit_estado = sop_id AND cit_paciente_id = pac_id"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -154,6 +167,33 @@ def qry_solicitar_cita(paciente, medico, fechaHora, fecha, detalle):
     print(e, file=sys.stderr)
     return "Error al cargar datos"
 
+def qry_atender_cita(cita, historia):
+  try:
+    qry = "INSERT INTO historia (his_texto, his_cita_id) VALUES ('" + historia + "', " + cita + ")"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    print("###", file=sys.stderr)
+    return "OK"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_actualizar_estado_cita(cita):
+  try:
+    qry = "UPDATE citas SET cit_estado = 16 WHERE cit_id = " + cita
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_cancelar_cita(id):
   try:
     qry = "UPDATE citas SET cit_estado = 14 WHERE cit_id = " + id
@@ -166,4 +206,51 @@ def qry_cancelar_cita(id):
   except Error as e:
     print(e, file=sys.stderr)
     return "Error al cancelar cita"
-    
+
+def qry_aceptar_cita(id):
+  try:
+    qry = "UPDATE citas SET cit_estado = 15 WHERE cit_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al aceptar cita"
+
+def qry_insertar_comentarios(id):
+  try:
+    qry = "INSERT INTO comentarios (com_texto_paciente, com_texto_medico, com_cita_id) VALUES ('', '', " + id + ")"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    return "Error al cargar datos"
+
+def qry_actualizar_comentarios(id, paciente, medico):
+  try:
+    qry = "UPDATE comentarios SET com_texto_paciente = '" + paciente + "', com_texto_medico = '" + medico + "' WHERE com_cita_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except Error as e:
+    return "Error al cargar datos"
+
+def qry_cargar_comentarios(id):
+  try:
+    qry = "SELECT * FROM comentarios WHERE com_cita_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    return result
+  except Error as e:
+    return "Error al cargar datos"

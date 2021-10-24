@@ -1,30 +1,5 @@
 $(function() {
 
-  $(document).on('click', "#detallesCita", function() {
-      $.ajax({
-            url: '/detallesCitaPaciente',
-            data: { idCita : $(this).attr('idCita')},
-            type: 'post', 
-            success: function(response) { 
-              if (response.status == "OK") {
-                $("#msgDetallesCita #mensajeOk").text(response.msg);
-                $("#dcPaciente").val(response.datos[3] + " " + response.datos[4]);
-                $("#dcMedico").val(response.datos[1] + " " + response.datos[2]);
-                $('#modalDetallesCita').modal('show');
-                showMensaje("#msgDetallesCita", "Ok");
-              }else if(response.status == "FAIL"){
-                $("#msgDetallesCita #mensajeFail").text(response.msg);
-                showMensaje("#msgDetallesCita", "Fail");
-              }
-            },
-            error: function(error) {
-              console.log(error)
-              showMensaje("#msgDetallesCita", "Server");
-            }
-        });
-      return false;
-  });
-
   $(document).on('click', "#scSolicitar", function() {
     $.ajax({
           url: '/solicitarCita',
@@ -140,6 +115,32 @@ return false;
 });
 document.write(`
 
-
+<div class="modal fade" id="modalComentarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        COMENTAR CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      </div>
+      <div class="modal-body">
+        <form>
+          <fieldset>
+            <div class="form-group">
+              <label for="ccComentarioMedico">Comentario del medico</label>
+              <textarea id="ccComentarioMedico" class="form-control" rows="2" placeholder="Califica la cita como te pareció." disabled></textarea>
+            </div>
+            <div class="form-group">
+              <label for="ccComentarioPaciente">Comentario del paciente</label>
+              <textarea id="ccComentarioPaciente" class="form-control" rows="2" placeholder=""></textarea>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+        <div id="msgComentarCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button id="ccComentar" type="button" class="btn btn-verde">COMENTAR</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 `);

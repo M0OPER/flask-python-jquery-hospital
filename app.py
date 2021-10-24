@@ -136,7 +136,10 @@ def panel():
 			if session["tipo_usuario"] == "ADMINISTRADOR":
 				return render_template('/administrador.html')
 			elif session["tipo_usuario"] == "MEDICO":
-				return render_template('/medicos.html')
+				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
+				tipo_citas = consultas.qry_soporte("CITM")
+				listado_citas = consultas.qry_listar_citas_medico(str(session["codigo"]), "estado_id", "")
+				return render_template("medicos.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"])
 			elif session["tipo_usuario"] == "PACIENTE":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "pacientes", "pac")[0]
 				tipo_citas = consultas.qry_soporte("CITP")
@@ -224,12 +227,64 @@ def solicitarCita():
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
 
+@app.route('/atenderCita', methods=['POST'])
+def atenderCita():
+	try:
+		cita     = request.form['cita']
+		historia = request.form['hist']
+		consulta = consultas.qry_atender_cita(cita, historia)
+		if consulta == "OK":
+			consultas.qry_insertar_comentarios(cita)
+			consultas.qry_actualizar_estado_cita(cita)
+			msg = "Cita atendida"
+		else:
+			msg = "Error al guardar"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
 @app.route('/cancelarCita', methods=['POST'])
 def cancelarCita():
 	try:
 		cita = request.form['cita']
 		consultas.qry_cancelar_cita(cita)
 		msg = "Cita cancelada"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/aceptarCita', methods=['POST'])
+def aceptarCita():
+	try:
+		cita = request.form['cita']
+		consultas.qry_aceptar_cita(cita)
+		msg = "Cita aceptada"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/cargarComentarios', methods=['POST'])
+def cargarComentarios():
+	try:
+		cita = request.form['cita']
+		datos = consultas.qry_cargar_comentarios(cita)
+		msg = "Datos cargados"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos': datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/actualizarComentarios', methods=['POST'])
+def actualizarComentarios():
+	try:
+		cita 		 = request.form['cita']
+		paciente = request.form['paci']
+		medico 	 = request.form['medi']
+		consultas.qry_actualizar_comentarios(cita, paciente, medico)
+		msg = "Datos guardados"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
 	except Exception as e:

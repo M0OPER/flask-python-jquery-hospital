@@ -34,7 +34,7 @@
   {% endblock %}
   <!-- Modal Detalles Cita-->
 <div class="modal fade" id="modalDetallesCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header modalHead">
         DETALLES CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
@@ -42,27 +42,59 @@
       <div class="modal-body">
         <form>
           <fieldset disabled>
+
             <div class="form-group">
-              <label for="dcPaciente">Paciente</label>
+              <div class="row">
+                <div class="col">
+                  <label for="dcPaciente">Paciente</label>
               <input type="text" id="dcPaciente" class="form-control" placeholder="Paciente">
-            </div>
-            <div class="form-group">
-              <label for="dcMedico">Médico</label>
+                </div>
+                <div class="col">
+                  <label for="dcMedico">Médico</label>
               <input type="text" id="dcMedico" class="form-control" placeholder="Medico">
+                </div>
+              </div>
             </div>
+
             <div class="form-group">
-              <label for="dti_fecha">Fecha</label>
-              <input type="text" id="dti_fecha" class="form-control" placeholder="04/11/2021">
+              <div class="row">
+                <div class="col">
+                  <label for="dcFecha">Fecha</label>
+                  <input type="text" id="dcFecha" class="form-control" placeholder="04/11/2021">
+                </div>
+                <div class="col">
+                  <label for="dcHora">Hora</label>
+                  <input type="text" id="dcHora" class="form-control">
+                </div>
+              </div>
+              <small class="form-text text-muted">El formato de la hora es de 24 horas.</small>
             </div>
+
             <div class="form-group">
-              <label for="dti_hora">Hora</label>
-              <input type="text" id="dti_hora" class="form-control" placeholder="10:50 a.m.">
-            </div>
-            <div class="form-group">
-              <label for="dti_detalles">Detalles</label>
-              <textarea id="dti_detalles" class="form-control" rows="2">
+              <label for="dcDetalles">Detalles del paciente</label>
+              <textarea id="dcDetalles" class="form-control" rows="2">
               </textarea>
             </div>
+
+            <div class="form-group">
+              <label for="dcHistoria">Detalles/Historia clinica</label>
+              <textarea id="dcHistoria" class="form-control" rows="2">
+              </textarea>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col">
+                  <label for="dcComentarioPaciente">Comentario del paciente</label>
+              <textarea id="dcComentarioPaciente" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col">
+                  <label for="dcComentarioMedico">Comentario del medico</label>
+              <textarea id="dcComentarioMedico" class="form-control" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+
           </fieldset>
         </form>
       </div>
