@@ -166,8 +166,8 @@ def usuario():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		datos = consultas.qry_cargar_datos_usuario(str(session["codigo"]))
-		return render_template("usuario.html", datos = datos)
+		#datos = consultas.qry_cargar_usuario(str(session["codigo"]))
+		return render_template("usuario.html")
 
 @app.route('/contactos/')
 def contactos():
