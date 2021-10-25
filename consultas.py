@@ -90,9 +90,9 @@ def qry_activar_cuenta(email, token):
   except Error as e:
     return "Error al guardar datos"
 
-def qry_listar_citas_paciente(id, tipo, texto):
+def qry_listar_citas_paciente(id, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

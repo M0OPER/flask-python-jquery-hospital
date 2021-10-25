@@ -15,7 +15,8 @@ $(document).on('click', ".detallesCita", function() {
               $("#dcHora").val(response.datos[5].substring(10, 16));
               $("#dcDetalles").val(response.datos[6]);
               $("#dcHistoria").val(response.datos[7]);
-              $("#dcComentario").val(response.datos[8]);
+              $("#dcComentarioPaciente").val(response.datos[8]);
+              $("#dcComentarioMedico").val(response.datos[9]);
               $('#modalDetallesCita').modal('show');
               showMensaje("#msgDetallesCita", "Ok");
             }else if(response.status == "FAIL"){
@@ -102,7 +103,7 @@ document.write(`
       </div>
       <div class="modal-footer modalFoot" align="center">
         <div id="msgCancelarCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
-        <button idcita="" type="button" class="btn btn-verde cancelarCita">CANCELAR CITA</button>
+        <button idcita="" type="button" class="btn btn-verde cancelarCitaBoton">CANCELAR CITA</button>
       </div>
     </div>
   </div>

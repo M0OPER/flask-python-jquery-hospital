@@ -1,5 +1,50 @@
 $(function() {
 
+  $(document).on('keyup', "#pnlBuscarCitasPacientes", function() {
+    $.ajax({
+          url: '/listarCitasPacientes',
+          data: { text : $(this).val() },
+          type: 'post', 
+          success: function(response) {
+            if (response.status == "OK") {
+              var citas = "";
+              $("#msgPanel #mensajeOk").text(response.msg);
+              for (let index = 0; index < response.datos.length; index++) {
+                citas += '<tr> \
+                <th scope="row">' + (index + 1)  + '</th> \
+                <td>' + response.datos[index][1] + '</td> \
+                <td>' + response.datos[index][2] + '</td> \
+                <td>' + response.datos[index][3] + '</td> \
+                <td><i idCita="' + response.datos[index][0] + '" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i></td>'
+                if (response.datos[index][1] == "ASIGNADA") {
+                  citas += '<td><i idCita="' + response.datos[index][0] + '" class="bi bi-x-square-fill close manita float-left cancelarCita" aria-label="Close"></i></td>'
+                }else if (response.datos[index][1] == "PENDIENTE"){
+                  citas += '<td><i idCita="' + response.datos[index][0] + '" class="bi bi-x-square-fill close manita float-left cancelarCita" aria-label="Close"></i></td>'
+                }else{
+                  citas += '<td></td>'
+                }
+                if (response.datos[index][1] == "FINALIZADA") {
+                  citas += '<td><i idCita="' + response.datos[index][0] + '" class="bi bi-chat-square-text-fill close manita float-left comentarCita" data-toggle="modal" data-target="#modalComentarCita" aria-label="Close"></i></td>'
+                }else{
+                  citas += '<td></td>'
+                }
+                citas += '</tr>'
+              }
+              $("#tblCitasPacintes").html(citas);
+              showMensaje("#msgPanel", "Ok");
+            }else if(response.status == "FAIL"){
+              $("#msgPanel #mensajeFail").text(response.msg);
+              showMensaje("#msgPanel", "Fail");
+            }
+          },
+          error: function(error) {
+            console.log(error)
+            showMensaje("#msgPanel", "Server");
+          }
+      });
+    return false;
+  });
+
   $(document).on('click', "#scSolicitar", function() {
     $.ajax({
           url: '/solicitarCita',
@@ -53,7 +98,7 @@ $(document).on('click', "#pnlSolicitarCita", function() {
   return false;
 });
 
-$(document).on('click', ".cancelarCita", function() {
+$(document).on('click', ".cancelarCitaBoton", function() {
   $.ajax({
         url: '/cancelarCita',
         data: { cita :  $(this).attr("idcita")},
@@ -78,8 +123,8 @@ $(document).on('click', ".cancelarCita", function() {
 });
 
 
-$(document).on('click', "#cancelarCita", function() {
-  $(".cancelarCita").attr("idcita", $(this).attr("idcita"));
+$(document).on('click', ".cancelarCita", function() {
+  $(".cancelarCitaBoton").attr("idcita", $(this).attr("idcita"));
   $('#modalCancelarCita').modal('show');
   return false;
 });

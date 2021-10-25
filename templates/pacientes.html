@@ -5,10 +5,10 @@
     <div class="form-group">
       <div class="row">
         <div class="col-4">
-          <input id="pnlBuscar" name="pnlBuscar" type="text" class="form-control" placeholder="BUSCAR CITAS...">
+          <input id="pnlBuscarCitasPacientes" type="text" class="form-control" placeholder="BUSCAR CITAS POR APELLIDOS DEL MEDICO...">
         </div>
         <div class="col-2">
-         <select class="form-control text-white bg-dark manita" id="buscar">
+         <select class="form-control text-white bg-dark manita" id="pnlBuscarSeleccion">
           {% for tipo in tipo_citas %}
           <option value="{% print(tipo[2]) %}">{% print(tipo[3]) %}</option>
           {% endfor %}
@@ -34,38 +34,23 @@
               <th scope="col">CALIFICAR</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tblCitasPacintes">
             {% for datos in listado_citas %}
               <tr>
                 <th scope="row">{{loop.index}}</th>
                 <td>{% print(datos[1]) %}</td>
                 <td>{% print(datos[2]) %}</td>
                 <td>{% print(datos[3]) %}</td>
+                <td><i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i></td>
                 <td>
-                  {% if datos[1] == "CANCELADA" %}
-                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
-                  {% elif datos[1] == "ASIGNADA" %}
-                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
-                  {% elif datos[1] == "PENDIENTE" %}
-                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
-                  {% elif datos[1] == "FINALIZADA" %}
-                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if datos[1] == "CANCELADA" %}
-                  {% elif datos[1] == "ASIGNADA" %}
+                  {% if datos[1] == "ASIGNADA" %}
                     <i idCita="{% print(datos[0]) %}" class="bi bi-x-square-fill close manita float-left cancelarCita" data-toggle="modal" data-target="#modalCancelarCita" aria-label="Close"></i>
                   {% elif datos[1] == "PENDIENTE" %}
                     <i idCita="{% print(datos[0]) %}" class="bi bi-x-square-fill close manita float-left cancelarCita" data-toggle="modal" data-target="#modalCancelarCita" aria-label="Close"></i>
-                  {% elif datos[1] == "FINALIZADA" %}
                   {% endif %}
                 </td>
                 <td>
-                  {% if datos[1] == "CANCELADA" %}
-                  {% elif datos[1] == "ASIGNADA" %}
-                  {% elif datos[1] == "PENDIENTE" %}
-                  {% elif datos[1] == "FINALIZADA" %}
+                  {% if datos[1] == "FINALIZADA" %}
                     <i idCita="{% print(datos[0]) %}" class="bi bi-chat-square-text-fill close manita float-left comentarCita" data-toggle="modal" data-target="#modalComentarCita" aria-label="Close"></i>
                   {% endif %}
                 </td>
@@ -132,4 +117,4 @@
   </div>
 </div>
 {% endblock %}
-{% block detalle_cita %}<button idcita="" type="button" class="btn btn-verde cancelarCita">CANCELAR CITA</button>{% endblock %}
+{% block detalle_cita %}<button idcita="" type="button" class="btn btn-verde cancelarCitaBoton">CANCELAR CITA</button>{% endblock %}

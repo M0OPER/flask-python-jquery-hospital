@@ -143,10 +143,22 @@ def panel():
 			elif session["tipo_usuario"] == "PACIENTE":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "pacientes", "pac")[0]
 				tipo_citas = consultas.qry_soporte("CITP")
-				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "estado_id", "")
+				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "")
 				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"])
 			else:
 				return "Error dentro del servidor"
+
+@app.route('/listarCitasPacientes', methods=['POST'])
+def listarCitasPacientes():
+	try:
+		texto = "AND med_apellidos LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_citas_paciente(str(session["codigo"]), texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+#AND med_apellidos LIKE '%b%' OR med_nombres LIKE '%b%' 
 
 @app.route('/usuario/')
 def usuario():
@@ -154,7 +166,8 @@ def usuario():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		return render_template('usuario.html')
+		datos = consultas.qry_cargar_datos_usuario(str(session["codigo"]))
+		return render_template("usuario.html", datos = datos)
 
 @app.route('/contactos/')
 def contactos():
