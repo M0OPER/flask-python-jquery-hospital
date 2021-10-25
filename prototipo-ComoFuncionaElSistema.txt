@@ -5,6 +5,13 @@ USUARIO Y CONTRASEÑA PARA EL LOGIN
 =>En el caso del medico nunca se habló de su registro, por lógica los registra el superadministrador
 
 =>EN el caso del administrador el usuario y contraseña ya los cree manualmente ya que es el superusuario
-EMAIL    => admin@simon_bolivar.com
-PASSWORD => admin1234
---------------------------------------------------------------------------------------
+ADMINISTRADOR PRECREADO PARA PROBAR EL SISTEMA 
+edwinrafaelmontesmeza@gmail.com => admin1234
+
+MEDICOS PRECREADOS PARA PROBAR EL SISTEMA 
+med45@hotmail.com      => easy1234
+godred129922@gmail.com => easy1234
+
+PACIENTES PRECREADOS PARA PROBAR EL SISTEMA 
+godred1299@gmail.com          => easy1234
+manuelrafaelbonilla@gmail.com => pindi1234

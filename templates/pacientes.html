@@ -8,7 +8,7 @@
           <input id="pnlBuscar" name="pnlBuscar" type="text" class="form-control" placeholder="BUSCAR CITAS...">
         </div>
         <div class="col-2">
-         <select class="form-control text-white bg-dark manita" id="exampleFormControlSelect1">
+         <select class="form-control text-white bg-dark manita" id="buscar">
           {% for tipo in tipo_citas %}
           <option value="{% print(tipo[2]) %}">{% print(tipo[3]) %}</option>
           {% endfor %}
@@ -28,9 +28,10 @@
               <th scope="col">#</th>
               <th scope="col">ESTADO</th>
               <th scope="col">MEDICO</th>
-              <th scope="col">FECHA</th>
+              <th scope="col">FECHA Y HORA</th>
               <th scope="col">DETALLES</th>
               <th scope="col">CANCELAR</th>
+              <th scope="col">CALIFICAR</th>
             </tr>
           </thead>
           <tbody>
@@ -40,8 +41,34 @@
                 <td>{% print(datos[1]) %}</td>
                 <td>{% print(datos[2]) %}</td>
                 <td>{% print(datos[3]) %}</td>
-                <td><i id="detallesCita" idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detalles" data-toggle="modal" data-target="#modalDetallesCita" aria-label="Close"></i></td>
-                <td><i id="cancelarCita" idCita="{% print(datos[0]) %}" class="bi bi-x-square-fill close manita float-left cancelar" data-toggle="modal" data-target="#modalCancelarCita" aria-label="Close"></i></td>
+                <td>
+                  {% if datos[1] == "CANCELADA" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
+                  {% elif datos[1] == "ASIGNADA" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
+                  {% elif datos[1] == "PENDIENTE" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
+                  {% elif datos[1] == "FINALIZADA" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesCita" aria-label="Close"></i>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if datos[1] == "CANCELADA" %}
+                  {% elif datos[1] == "ASIGNADA" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-x-square-fill close manita float-left cancelarCita" data-toggle="modal" data-target="#modalCancelarCita" aria-label="Close"></i>
+                  {% elif datos[1] == "PENDIENTE" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-x-square-fill close manita float-left cancelarCita" data-toggle="modal" data-target="#modalCancelarCita" aria-label="Close"></i>
+                  {% elif datos[1] == "FINALIZADA" %}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if datos[1] == "CANCELADA" %}
+                  {% elif datos[1] == "ASIGNADA" %}
+                  {% elif datos[1] == "PENDIENTE" %}
+                  {% elif datos[1] == "FINALIZADA" %}
+                    <i idCita="{% print(datos[0]) %}" class="bi bi-chat-square-text-fill close manita float-left comentarCita" data-toggle="modal" data-target="#modalComentarCita" aria-label="Close"></i>
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>
@@ -50,5 +77,59 @@
     </div>
   </div>
 </div>
-<button id="pnlSolicitar" type="button" class="btn btn-verde btn-lg" data-toggle="modal" data-target="#modalSolicitarCita">SOLICITAR CITA</button>
+<button id="pnlSolicitarCita" type="button" class="btn btn-verde btn-lg">SOLICITAR CITA</button>
+<script type="text/javascript" src="../static/js/bodyPacientes.js"></script>
+<!-- Modal Solicitar Cita-->
+<div class="modal fade" id="modalSolicitarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        SOLICITAR CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      </div>
+      <div class="modal-body">
+        <form>
+          <fieldset>
+            <div class="form-group">
+              <label for="scPaciente">Paciente</label>
+              <input type="text" id="scPaciente" class="form-control" disabled value="{% for nombre in nombre %}{% print(nombre[0]) %}{% endfor %}">
+            </div>
+            <div class="form-group">
+              <label for="scEspecialidad">Especialidad</label>
+              <select class="form-control text-white bg-dark manita" id="scEspecialidad">
+                
+               </select>
+            </div>
+            <div class="form-group">
+              <label for="scMedico">Médico</label>
+              <select class="form-control text-white bg-dark manita" id="scMedico" disabled>
+                <option value='0'>--Seleccionar--</option>
+               </select>
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <div class="col">
+                  <input id="scFecha" name="scFecha" type="date" class="form-control">
+                </div>
+                <div class="col">
+                  <input id="scHora" name="scHora" type="time" class="form-control"d>
+                </div>
+              </div>
+              <small class="form-text text-muted">El formato de la hora es de 12 horas.</small>
+            </div>
+            <div class="form-group">
+              <label for="scDetalles">Detalles</label>
+              <textarea id="scDetalles" class="form-control" rows="2">
+              </textarea>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+        <div id="msgSolicitar"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button id="scSolicitar" type="button" class="btn btn-verde">SOLICITAR CITA</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
+{% block detalle_cita %}<button idcita="" type="button" class="btn btn-verde cancelarCita">CANCELAR CITA</button>{% endblock %}

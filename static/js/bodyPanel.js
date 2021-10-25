@@ -1,47 +1,89 @@
-document.write(`
+$(function() {
 
-<!-- Modal Detalles Cita-->
-<div class="modal fade" id="modalDetallesCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header modalHead">
-        DETALLES CITA #1<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
-      </div>
-      <div class="modal-body">
-        <form>
-          <fieldset disabled>
-            <div class="form-group">
-              <label for="dti_paciente">Paciente</label>
-              <input type="text" id="dti_paciente" class="form-control" placeholder="Marcos Fernández">
-            </div>
-            <div class="form-group">
-              <label for="dti_medico">Médico</label>
-              <input type="text" id="dti_medico" class="form-control" placeholder="Dra. Lucía Guzmán">
-            </div>
-            <div class="form-group">
-              <label for="dti_fecha">Fecha</label>
-              <input type="text" id="dti_fecha" class="form-control" placeholder="04/11/2021">
-            </div>
-            <div class="form-group">
-              <label for="dti_hora">Hora</label>
-              <input type="text" id="dti_hora" class="form-control" placeholder="10:50 a.m.">
-            </div>
-            <div class="form-group">
-              <label for="dti_detalles">Detalles</label>
-              <textarea id="dti_detalles" class="form-control" rows="2">
-                Lorem ipsum dolor, sit, amet consectetur adipisicing elit. Autem sapiente voluptatem maiores dolores praesentium illum dolor esse"
-              </textarea>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-      <div class="modal-footer modalFoot" align="center">
-        <div id="msgIngresar"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
-        <button id="isIngresar" type="button" class="btn btn-verde">CANCELAR CITA</button>
-      </div>
-    </div>
-  </div>
-</div>
+$(document).on('click', ".detallesCita", function() {
+  $(".cancelarCita").attr("idcita", $(this).attr("idcita"));
+    $.ajax({
+          url: '/detallesCitaPaciente',
+          data: { idCita : $(this).attr('idCita')},
+          type: 'post', 
+          success: function(response) { 
+            if (response.status == "OK") {
+              $("#msgDetallesCita #mensajeOk").text(response.msg);
+              $("#dcPaciente").val(response.datos[3] + " " + response.datos[4]);
+              $("#dcMedico").val(response.datos[1] + " " + response.datos[2]);
+              $("#dcFecha").val(response.datos[5].substring(0, 10));
+              $("#dcHora").val(response.datos[5].substring(10, 16));
+              $("#dcDetalles").val(response.datos[6]);
+              $("#dcHistoria").val(response.datos[7]);
+              $("#dcComentario").val(response.datos[8]);
+              $('#modalDetallesCita').modal('show');
+              showMensaje("#msgDetallesCita", "Ok");
+            }else if(response.status == "FAIL"){
+              $("#msgDetallesCita #mensajeFail").text(response.msg);
+              showMensaje("#msgDetallesCita", "Fail");
+            }
+          },
+          error: function(error) {
+            console.log(error)
+            showMensaje("#msgDetallesCita", "Server");
+          }
+      });
+    return false;
+});
+
+$(document).on('click', ".comentarCita", function() {
+  $("#ccComentar").attr("idcita", $(this).attr("idcita"));
+  $.ajax({
+    url: '/cargarComentarios',
+    data: { cita  : $(this).attr('idcita')},
+    type: 'post', 
+    success: function(response) { 
+      if (response.status == "OK") {
+        $("#msgPanel #mensajeOk").text(response.msg);
+        showMensaje("#msgPanel", "Comentarios cargados");
+        $("#ccComentarioMedico").val(response.datos[2]);
+        $("#ccComentarioPaciente").val(response.datos[1]);
+        $("#dcDetalles").val(response.datos[6]);
+        $('#modalComentarCita').modal('show');
+      }else if(response.status == "FAIL"){
+        $("#msgPanel #mensajeFail").text(response.msg);
+        showMensaje("#msgPanel", "Fail");
+      }
+    },
+    error: function(error) {
+      console.log(error)
+      showMensaje("#msgPanel", "Server");
+    }
+});
+return false;
+ 
+});
+
+$(document).on('click', "#ccComentar", function() {
+  $.ajax({
+    url: '/actualizarComentarios',
+    data: { cita : $(this).attr('idcita'),
+            paci : $("#ccComentarioPaciente").val(),
+            medi : $("#ccComentarioMedico").val()},
+    type: 'post', 
+    success: function(response) { 
+      if (response.status == "OK") {
+        location.reload();
+      }else if(response.status == "FAIL"){
+        $("#msgComentarCita #mensajeFail").text(response.msg);
+        showMensaje("#msgComentarCita", "Fail");
+      }
+    },
+    error: function(error) {
+      console.log(error)
+      showMensaje("#msgComentarCita", "Server");
+    }
+});
+return false;
+});
+
+});
+document.write(`
 
 <!-- Modal Cancelar Cita-->
 <div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -59,59 +101,31 @@ document.write(`
 </form>
       </div>
       <div class="modal-footer modalFoot" align="center">
-        <div id="msgIngresar"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
-        <button id="isIngresar" type="button" class="btn btn-verde">CANCELAR CITA</button>
+        <div id="msgCancelarCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button idcita="" type="button" class="btn btn-verde cancelarCita">CANCELAR CITA</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal Solicitar Cita-->
-    <div class="modal fade" id="modalSolicitarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal Aceptar Cita-->
+<div class="modal fade" id="modalAceptarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modalHead">
-        SOLICITAR CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+        ACEPTAR CITA<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
       </div>
       <div class="modal-body">
         <form>
-          <fieldset>
-            <div class="form-group">
-              <label for="dti_paciente">Paciente</label>
-              <input type="text" id="dti_paciente" class="form-control" placeholder="Marcos Fernández" disabled>
-            </div>
-            <div class="form-group">
-              <label for="scEspecialidad">Especialidad</label>
-              <select class="form-control text-white bg-dark manita" id="scEspecialidad">
-                <option>ODONTOLOGOS</option>
-                <option>CARDIOLOGOS</option>
-                <option>PEDIATRAS</option>
-               </select>
-            </div>
-            <div class="form-group">
-              <label for="dti_medico">Médico</label>
-              <select class="form-control text-white bg-dark manita" id="exampleFormControlSelect1">
-                <option>MIGUEL PEREZ --</option>
-                <option>JUANCHO JOSÉ</option>
-                <option>MARIA BENITEZ</option>
-               </select>
-            </div>
-            <div class="form-group">
-              <label for="dti_fecha">Fecha</label>
-              <input type="date" id="dti_fecha" class="form-control" placeholder="04/11/2021">
-            </div>
-            <div class="form-group">
-              <label for="dti_detalles">Detalles</label>
-              <textarea id="dti_detalles" class="form-control" rows="2">
-                Lorem ipsum dolor, sit, amet consectetur adipisicing elit. Autem sapiente voluptatem maiores dolores praesentium illum dolor esse"
-              </textarea>
-            </div>
-          </fieldset>
-        </form>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Cuando acepte la cita será asignada a la fecha y hora, por favor verifique los detalles del paciente. Si no la acepta el paciente tendrá que volver a solicitar una cita.</label>
+  </div>
+</form>
       </div>
       <div class="modal-footer modalFoot" align="center">
-        <div id="msgSolicitarr"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
-        <button id="isIngresar" type="button" class="btn btn-verde">SOLICITAR CITA</button>
+        <div id="msgAceptarCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button id="aceAceptar" idcita="" type="button" class="btn btn-verde">ACEPTAR CITA</button>
+        <button id="aceDenegar" idcita="" type="button" class="btn btn-danger">DENEGAR CITA</button>
       </div>
     </div>
   </div>
