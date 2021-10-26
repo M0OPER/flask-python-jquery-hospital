@@ -56,6 +56,32 @@ def qry_actualizar_usuario(id, rol, usuario, nombres, apellidos, telefono, direc
     print(e, file=sys.stderr)
     return "Error al cargar datos"
 
+def qry_bloquear_usuario(id):
+  try:
+    qry = "UPDATE usuarios SET usu_estado = 9 WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_desbloquear_usuario(id):
+  try:
+    qry = "UPDATE usuarios SET usu_estado = 10 WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_session_id(id, rol, usuario):
   try:
     qry = "SELECT " + usuario + "_id FROM usuarios, " + rol + " WHERE usu_id = '" + id + "' AND usu_id = " + usuario + "_usuario_id"
@@ -145,6 +171,19 @@ def qry_listar_citas_medico(id, tipo, texto):
 def qry_listar_citas_administrador(texto):
   try:
     qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte, medicos WHERE cit_medico_id = med_id AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_listar_medicos_administrador(texto):
+  try:
+    qry = "SELECT med_usuario_id, med_nombres, med_apellidos, med_identificacion, usu_estado FROM medicos, usuarios WHERE usu_id = med_usuario_id " + texto + " ORDER BY med_nombres ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
