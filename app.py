@@ -168,6 +168,23 @@ def usuario():
 		datos = consultas.qry_cargar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]))
 		return render_template("usuario.html", datos = datos)
 
+@app.route('/actualizarUsuario', methods=['POST'])
+def actualizarUsuario():
+	try:
+		nombres 				 = request.form['nomb']
+		apellidos 			 = request.form['apel']
+		telefono 			 	 = request.form['tele']
+		direccion 		 	 = request.form['dire']
+		fecha_nacimiento = request.form['fech']
+		edad 	 					 = request.form['edad']
+		sexo 	 					 = request.form['sexo']
+		consultas.qry_actualizar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]), nombres, apellidos, telefono, direccion, fecha_nacimiento, edad, sexo)
+		msg = "Datos guardados con exito"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
 @app.route('/contactos/')
 def contactos():
 	botonesSesion()
