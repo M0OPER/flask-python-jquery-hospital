@@ -83,6 +83,59 @@ $(document).on('click', "#ccComentar", function() {
 return false;
 });
 
+$(document).on('click', ".aceptarCita", function() {
+  $("#aceAceptar").attr("idcita", $(this).attr("idcita"));
+  $("#aceDenegar").attr("idcita", $(this).attr("idcita"));
+  $('#modalAceptarCita').modal('show');
+  return false;
+});
+
+$(document).on('click', "#aceAceptar", function() {
+  $.ajax({
+        url: '/aceptarCita',
+        data: { cita  : $(this).attr('idcita')},
+        type: 'post', 
+        success: function(response) { 
+          if (response.status == "OK") {
+            $("#msgPanel #mensajeOk").text(response.msg);
+            showMensaje("#msgPanel", "Ok");
+            location.reload();
+          }else if(response.status == "FAIL"){
+            $("#msgAtenderCita #mensajeFail").text(response.msg);
+            showMensaje("#msgAtenderCita", "Fail");
+          }
+        },
+        error: function(error) {
+          console.log(error)
+          showMensaje("#msgAtenderCita", "Server");
+        }
+    });
+  return false;
+});
+
+$(document).on('click', "#aceDenegar", function() {
+  $.ajax({
+        url: '/cancelarCita',
+        data: { cita  : $(this).attr('idcita')},
+        type: 'post', 
+        success: function(response) { 
+          if (response.status == "OK") {
+            $("#msgPanel #mensajeOk").text(response.msg);
+            showMensaje("#msgPanel", "Ok");
+            location.reload();
+          }else if(response.status == "FAIL"){
+            $("#msgAtenderCita #mensajeFail").text(response.msg);
+            showMensaje("#msgAtenderCita", "Fail");
+          }
+        },
+        error: function(error) {
+          console.log(error)
+          showMensaje("#msgAtenderCita", "Server");
+        }
+    });
+  return false;
+});
+
 });
 document.write(`
 

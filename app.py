@@ -134,7 +134,12 @@ def panel():
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
-				return render_template('/administrador.html')
+				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "administradores", "adm")[0]
+				tipo_citas        = consultas.qry_soporte("CITD")
+				tipo_medicos      = consultas.qry_soporte("MEDA")
+				tipo_pacientes    = consultas.qry_soporte("PACA")
+				listado_citas = consultas.qry_listar_citas_administrador("")
+				return render_template('administrador.html', tipo_citas = tipo_citas, listado_citas = listado_citas)
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
@@ -153,6 +158,17 @@ def listarCitasPacientes():
 	try:
 		texto = "AND med_apellidos LIKE '%" + request.form['text'] + "%'"
 		datos = consultas.qry_listar_citas_paciente(str(session["codigo"]), texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/listarCitasAdministradores', methods=['POST'])
+def listarCitasAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_citas_administrador(texto)
 		msg 	= "Datos cargados correctamente"
 		sts	  = "OK"
 		return ({'status':sts,'msg':msg, 'datos':datos})
