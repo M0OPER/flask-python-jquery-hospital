@@ -158,7 +158,6 @@ def listarCitasPacientes():
 		return ({'status':sts,'msg':msg, 'datos':datos})
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
-#AND med_apellidos LIKE '%b%' OR med_nombres LIKE '%b%' 
 
 @app.route('/usuario/')
 def usuario():
@@ -166,8 +165,8 @@ def usuario():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		#datos = consultas.qry_cargar_usuario(str(session["codigo"]))
-		return render_template("usuario.html")
+		datos = consultas.qry_cargar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]))
+		return render_template("usuario.html", datos = datos)
 
 @app.route('/contactos/')
 def contactos():

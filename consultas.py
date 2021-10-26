@@ -30,6 +30,19 @@ def qry_iniciar_sesion(email):
     print(e, file=sys.stderr)
     return "Error al guardar datos"
 
+def qry_cargar_usuario(id, rol, usuario):
+  try:
+    qry = "SELECT " + rol + "_nombres, " + rol + "_apellidos, sop_datos, " + rol + "_identificacion, " + rol + "_telefono, " + rol + "_direccion, " + rol + "_fecha_nacimiento, " + rol + "_sexo, usu_email FROM usuarios, soporte INNER JOIN " + usuario + " on usu_id = " + rol + "_usuario_id WHERE " + rol + "_id = " + id + " AND " + rol + "_tipo_identificacion = sop_id "
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    print(qry, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_session_id(id, rol, usuario):
   try:
     qry = "SELECT " + usuario + "_id FROM usuarios, " + rol + " WHERE usu_id = '" + id + "' AND usu_id = " + usuario + "_usuario_id"
