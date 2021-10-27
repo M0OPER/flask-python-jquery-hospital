@@ -179,6 +179,11 @@ def servicios():
 	botonesSesion()
 	return render_template('servicios.html')
 
+@app.route('/preguntas/')
+def	preguntas():
+	botonesSesion()
+	return render_template('preguntas.html')
+
 def botonesSesion():
 	session.pop('_flashes', None)
 	sesion = funciones.verificarSesion()

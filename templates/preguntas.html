@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}PREGUNTAS FRECUENTES{% endblock %}
+{% block navegacion %}
+  <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
+  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }} 
+      {% endfor %} 
+    {% endif %}
+  {% endwith %}
+  <a href="/contactos"><button type="button" class="btn btn-light">CONTACTOS</button></a>
+  <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
+{% endblock %}
+{% block contenido %}
+<div class="" tabindex="-1">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+
+			<div class="modal-header modalHead">Preguntas Frecuentes</div>
+			
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="list-group col-md-12">
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Cómo aparto una cita?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Teléfono y correo para pedir citas?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Cómo solicito mi cita por la página web?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Horario de atención?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Cómo solicito mi historia clínica?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Qué tipo de especialidades tiene el hospital?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Eps con las que tiene convenio el Hospital?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Se atienden personas con Sisbén o extranjeras?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Tipos de exámenes médicos que se realizan?
+							</a>
+							<a href="#" class="list-group-item list-group-item-action text-decoration-none text-reset">
+								¿Tipos de cirugías que se realizan?
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+{% endblock %}
