@@ -119,9 +119,34 @@ def qry_registrar_usuario(email, token, hash, fecha, rol, estado):
   except Error as e:
     print(e, file=sys.stderr)
 
+def qry_registrar_medico(email, token, hash, fecha, rol, estado):
+  try:
+    qry = "INSERT INTO usuarios (usu_email, usu_token, usu_hash_pass, usu_created_at, usu_tipo_usu, usu_estado) VALUES ('" + email + "', '" + token + "', '" + hash + "', '" + fecha + "', " + rol + ", " + estado + ");"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    last_id = cursorObj.lastrowid
+    con.commit()
+    con.close()
+    return last_id
+  except Error as e:
+    print(e, file=sys.stderr)
+
 def qry_registrar_userId(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion):
   try:
     qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, pac_identificacion, pac_tipo_identificacion, pac_nombres, pac_apellidos, pac_telefono, pac_direccion) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "');"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Guardada con exito"
+  except Error as e:
+    print("error", file=sys.stderr)
+
+def qry_registrar_userIdMedico(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion, especialidad):
+  try:
+    qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, med_identificacion, med_tipo_identificacion, med_nombres, med_apellidos, med_telefono, med_direccion, med_especialidad_id) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "', " + especialidad + ");"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

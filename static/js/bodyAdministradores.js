@@ -61,6 +61,8 @@ return false;
               medicos += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i></td>'
             }else if(response.datos[index][4] == 9){
               medicos += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-unlock-fill close manita float-left desbloquearUsuario" aria-label="Close"></i></td>'
+            }else{
+              medicos += '<td>Falta activar</td>'
             }
             medicos += '</tr>'
           }
@@ -100,6 +102,8 @@ return false;
               pacientes += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i></td>'
             }else if(response.datos[index][4] == 9){
               pacientes += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-unlock-fill close manita float-left desbloquearUsuario" aria-label="Close"></i></td>'
+            }else{
+              pacientes += '<td>Falta activar</td>'
             }
             pacientes += '</tr>'
           }
@@ -220,6 +224,43 @@ return false;
             showMensaje("#msgBloquearUsuario", "Server");
           }
       });
+    return false;
+  });
+
+  $(document).on('click', "#rmRegistrarMedico", function() {
+    if ($("#rmNombres").val() == "" || $("#rmApellidos").val() == "" || $("#rmNumeroDocumento").val() == "" || $("#rmEmail").val() == "" || $("#rmTelefono").val() == "" || $("#rmDireccion").val() == "" || $("#rmPassword").val() == "") {
+      $("#msgRegistrarMedico #mensajeFail").text("Hay campos necesarios sin rellenar");
+        showMensaje("#msgRegistrarMedico", "Fail");
+    }else{
+    $.ajax({
+          url: '/registrarMedico',
+          data: { nomb : $("#rmNombres").val(),
+                  apel : $("#rmApellidos").val(),
+                  numd : $("#rmNumeroDocumento").val(),
+                  emai : $("#rmEmail").val(),
+                  tele : $("#rmTelefono").val(),
+                  dire : $("#rmDireccion").val(),
+                  pass : $("#rmPassword").val(),
+                  espe : $("#rmTipoEspecialidad").val()},
+          type: 'post',
+          success: function(response) {
+            if (response.status == "OK") {
+              $("#msgPanel #mensajeOk").text(response.msg);
+              listarMedicosAdministradores("", "med_nombres");
+              listarPacientesAdministradores("", "pac_nombres");
+              $('#modalRegistrarMedico').modal('hide');
+              showMensaje("#msgPanel", "Ok");
+            }else if(response.status == "FAIL"){
+              $("#modalRegistrarMedico #mensajeFail").text(response.msg);
+              showMensaje("#modalRegistrarMedico", "Fail");
+            }
+          },
+          error: function(error) {
+            console.log(error)
+            showMensaje("#modalRegistrarMedico", "Server");
+          }
+      });
+    }
     return false;
   });
 
@@ -359,78 +400,5 @@ document.write(`
   </div>
 </div>
 
-<!-- Modal Crear Medico-->
-<div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header modalHead">
-        CREAR MEDICO<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
-      </div>
-      <div class="modal-body">
-      <div class="form-group">
-      <div class="row">
-      <div class="col">
-       <input id="regNombres" name="regNombres" type="text" class="form-control" placeholder="Nombres">
-      </div>
-      <div class="col">
-       <input id="regApellidos" name="regApellidos" type="text" class="form-control" placeholder="Apellidos" required>
-      </div>
-     </div>
-     </div>
-
-     <div class="form-group">
-     <div class="row">
-      <div class="col">
-       <select id="regTipoDocumento" class="form-control">
-         <option value="0">--Tipo de documento--</option>
-         {% for tdocs in tipo_docs %}
-         <option value="{% print(tdocs[0]) %}">{% print(tdocs[2]) %}</option>
-         {% endfor %}
-       </select>
-      </div>
-      <div class="col">
-       <input id="regNumeroDocumento" type="number" class="form-control" placeholder="Numero de documento" required>
-      </div>
-     </div>
-    </div>
-
-    <div class="form-group">
-     <div class="row">
-      <div class="col">
-       <input id="regEmail" type="email" class="form-control" aria-describedby="emailHelp" placeholder="Correo electronico" autocomplete="off">
-       <small id="emailHelp" class="form-text text-muted">No compartiremos tu correo con nadie más.</small>
-      </div>
-     </div>
-    </div>
-
-    <div class="form-group">
-     <div class="row">
-      <div class="col">
-       <input id="regTelefono" type="number" class="form-control" placeholder="Telefono">
-      </div>
-      <div class="col">
-       <input id="regDireccion" type="text" class="form-control" placeholder="Direccion">
-      </div>
-     </div>
-    </div>
-
-    <div class="form-group">
-     <div class="row">
-      <div class="col">
-       <input id="regPassword1" type="password" class="form-control" placeholder="Contraseña" aria-describedby="passwordHelp">
-      </div>
-      <div class="col">
-       <input id="regPassword2" type="password" class="form-control" placeholder="Confirma contraseña" >
-      </div>
-     </div>
-     <small id="passwordHelp" class="form-text text-muted">La contraseña debe tener mas de 7 caracteres.</small>
-    </div>
-      </div>
-      <div class="modal-footer modalFoot" align="center">
-        <div id="msgDetallesUsuario"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
-      </div>
-    </div>
-  </div>
-</div>
 
 `);

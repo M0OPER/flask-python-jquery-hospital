@@ -98,6 +98,29 @@ def registrar():
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
 
+@app.route('/registrarMedico', methods=['POST'])
+def registrarMedico():
+	try:
+		nombres      = request.form['nomb']
+		apellidos    = request.form['apel']
+		num_doc      = request.form['numd']
+		email        = request.form['emai']
+		telefono     = request.form['tele']
+		direccion    = request.form['dire']
+		password     = request.form['pass']
+		especialidad = request.form['espe']
+		fecha        = time.strftime("%Y-%m-%d")
+		token        = bcrypt.gensalt().decode("utf-8")
+		hash         = funciones.crear_hash(password).decode("utf-8")
+		last_id      = consultas.qry_registrar_medico(email, token, hash, fecha, "5", "8")
+		consultas.qry_registrar_userIdMedico(str(last_id), "medicos", "med", num_doc, "1", nombres, apellidos, telefono, direccion, especialidad)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
+		msg = "Revisa tu correo para activar tu cuenta"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
 @app.route('/activar/', methods=['GET'])
 def activarCuenta():
 	try:
@@ -138,10 +161,12 @@ def panel():
 				tipo_citas        = consultas.qry_soporte("CITD")
 				tipo_medicos      = consultas.qry_soporte("MEDA")
 				tipo_pacientes    = consultas.qry_soporte("PACA")
+				tipo_docs 				= consultas.qry_soporte("DOCS")
+				tipo_especialidad = consultas.qry_soporte("ESPE")
 				listado_citas     = consultas.qry_listar_citas_administrador("")
 				listado_medicos   = consultas.qry_listar_medicos_administrador("")
 				listado_pacientes = consultas.qry_listar_pacientes_administrador("")
-				return render_template('administrador.html', tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, tipo_pacientes = tipo_pacientes, listado_citas = listado_citas, listado_medicos = listado_medicos, listado_pacientes = listado_pacientes)
+				return render_template('administrador.html', tipo_docs = tipo_docs, tipo_especialidad = tipo_especialidad, tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, tipo_pacientes = tipo_pacientes, listado_citas = listado_citas, listado_medicos = listado_medicos, listado_pacientes = listado_pacientes)
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
