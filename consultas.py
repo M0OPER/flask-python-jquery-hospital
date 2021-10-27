@@ -43,6 +43,19 @@ def qry_cargar_usuario(id, rol, usuario):
     print(e, file=sys.stderr)
     return "Error al cargar datos"
 
+def qry_detalles_usuario(id, rol, usuario):
+  try:
+    qry = "SELECT " + rol + "_nombres, " + rol + "_apellidos, sop_datos, " + rol + "_identificacion, " + rol + "_telefono, " + rol + "_direccion, " + rol + "_fecha_nacimiento, " + rol + "_edad, " + rol + "_sexo, usu_email FROM usuarios, soporte INNER JOIN " + usuario + " on usu_id = " + rol + "_usuario_id WHERE " + rol + "_usuario_id = " + id + " AND " + rol + "_tipo_identificacion = sop_id "
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    print(qry, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_actualizar_usuario(id, rol, usuario, nombres, apellidos, telefono, direccion, fecha_nacimiento, edad, sexo):
   try:
     qry = "UPDATE " + usuario + " SET " + rol + "_nombres = '" + nombres + "', " + rol + "_apellidos = '" + apellidos + "', " + rol + "_telefono = " + telefono + ", " + rol + "_direccion = '" + direccion + "', " + rol + "_fecha_nacimiento = '" + fecha_nacimiento + "', " + rol + "_edad = " + edad + ", " + rol + "_sexo = " + sexo + " WHERE " + rol + "_id = " + id

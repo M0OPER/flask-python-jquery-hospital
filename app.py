@@ -214,7 +214,7 @@ def detallesUsuario():
 		id	 		= request.form['id']
 		rol 		= request.form['rol']
 		usuario = request.form['usua']
-		datos = consultas.qry_cargar_usuario(id, rol, usuario)
+		datos = consultas.qry_detalles_usuario(id, rol, usuario)
 		msg = "Datos cargados con exito"
 		sts = "OK"
 		return ({'status':sts,'msg':msg, 'datos': datos})

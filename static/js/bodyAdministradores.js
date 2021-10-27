@@ -124,12 +124,22 @@ return false;
           data: { id   : $(this).attr("idusuario"),
                   rol  : $(this).attr("rol"),
                   usua : $(this).attr("usuario")},
-          type: 'post', 
+          type: 'post',
           success: function(response) { 
             if (response.status == "OK") {
+              $('#modalDetallesUsuario').modal('show');
               $("#msgDetallesUsuario #mensajeOk").text(response.msg);
-              $('#msgDetallesUsuario').modal('show');
-              showMensaje("#msgDetallesUsuario", "Fail");
+              $("#detNombres").val(response.datos[0]);
+              $("#detApellidos").val(response.datos[1]);
+              $("#detTipoIdentificacion").val(response.datos[2]);
+              $("#detNumeroIdentificacion").val(response.datos[3]);
+              $("#detTelefono").val(response.datos[4]);
+              $("#detDireccion").val(response.datos[5]);
+              $("#detEdad").val(response.datos[7]);
+              $("#detSexo").val(response.datos[8]);
+              $("#detCorreo").val(response.datos[9]);
+              $("#detFechaNacimiento").val(response.datos[6]);
+              showMensaje("#msgDetallesUsuario", "Ok");
             }else if(response.status == "FAIL"){
               $("#msgDetallesUsuario #mensajeFail").text(response.msg);
               showMensaje("#msgDetallesUsuario", "Fail");
@@ -153,12 +163,6 @@ return false;
 
   $(document).on('keyup', "#pnlBuscarPacientesAdministradores", function() {
     listarPacientesAdministradores($(this).val(), $("#pnlBuscarSeleccionPacientes").val());
-  });
-
-  $(document).on('click', ".detallesUsuario", function() {
-    $("#detallesUsuario").attr("idusuario", $(this).attr("idusuario"));
-    $('#modalDetallesUsuario').modal('show');
-    return false;
   });
 
   $(document).on('click', ".bloquearUsuario", function() {
@@ -277,7 +281,6 @@ document.write(`
       <div class="modal-body">
         <form>
           <fieldset disabled>
-
             <div class="form-group">
               <div class="row">
                 <div class="col">
@@ -324,8 +327,11 @@ document.write(`
               <input type="text" id="detEdad" class="form-control" disabled>
                 </div>
                 <div class="col">
-                  <label for="detSexo">Sexo</label>
-              <input type="text" id="detSexo" class="form-control" disabled>
+                <label for="detSexo">Sexo</label>
+                <select class="form-control" id="detSexo">
+                <option value="27">Masculino</option>
+                <option value="26">Femenino</option>
+               </select>
                 </div>
               </div>
             </div>
@@ -345,6 +351,80 @@ document.write(`
 
           </fieldset>
         </form>
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+        <div id="msgDetallesUsuario"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Medico-->
+<div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        CREAR MEDICO<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      </div>
+      <div class="modal-body">
+      <div class="form-group">
+      <div class="row">
+      <div class="col">
+       <input id="regNombres" name="regNombres" type="text" class="form-control" placeholder="Nombres">
+      </div>
+      <div class="col">
+       <input id="regApellidos" name="regApellidos" type="text" class="form-control" placeholder="Apellidos" required>
+      </div>
+     </div>
+     </div>
+
+     <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <select id="regTipoDocumento" class="form-control">
+         <option value="0">--Tipo de documento--</option>
+         {% for tdocs in tipo_docs %}
+         <option value="{% print(tdocs[0]) %}">{% print(tdocs[2]) %}</option>
+         {% endfor %}
+       </select>
+      </div>
+      <div class="col">
+       <input id="regNumeroDocumento" type="number" class="form-control" placeholder="Numero de documento" required>
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <input id="regEmail" type="email" class="form-control" aria-describedby="emailHelp" placeholder="Correo electronico" autocomplete="off">
+       <small id="emailHelp" class="form-text text-muted">No compartiremos tu correo con nadie más.</small>
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <input id="regTelefono" type="number" class="form-control" placeholder="Telefono">
+      </div>
+      <div class="col">
+       <input id="regDireccion" type="text" class="form-control" placeholder="Direccion">
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <input id="regPassword1" type="password" class="form-control" placeholder="Contraseña" aria-describedby="passwordHelp">
+      </div>
+      <div class="col">
+       <input id="regPassword2" type="password" class="form-control" placeholder="Confirma contraseña" >
+      </div>
+     </div>
+     <small id="passwordHelp" class="form-text text-muted">La contraseña debe tener mas de 7 caracteres.</small>
+    </div>
       </div>
       <div class="modal-footer modalFoot" align="center">
         <div id="msgDetallesUsuario"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
