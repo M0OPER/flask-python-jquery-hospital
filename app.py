@@ -82,6 +82,37 @@ def cambiarPassword():
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
 
+@app.route('/recuperarPassword', methods=['POST'])
+def recuperarPassword():
+	try:
+		email = request.form['emai']
+		token   = bcrypt.gensalt().decode("utf-8") + '/?edwin'
+		rs = consultas.qry_restablecer_password(email, token)
+		yag.send(to=email, subject='Restablece tu contraseña', contents='Bienvenido, usa este link para restablecer tu contraseña: http://127.0.0.1:5000/restablecer/?token=' + email + ':::' + token)
+		return ({'status':'OK','msg':'Verifica en tu correo para activar tu cuenta'})
+	except Exception as e:
+		return ({'status':'FAIL','msg':'Verifica en tu correo para activar tu cuenta'})
+
+@app.route('/restablecerPassword', methods=['POST'])
+def restablecerPassword():
+	try:
+		password = request.form['pass']
+		email    = request.form['emai']
+		token    = request.form['toke']
+		result = consultas.qry_verificar_token_password(email, token)
+		if result:
+			hash = funciones.crear_hash(password).decode("utf-8")
+			consultas.qry_cambiar_password_reco(email, hash)
+			consultas.qry_cambiar_password_reco(email, hash)
+			sts = "OK"
+			msg = "Se ha restablecido tu contraseña"
+		else:
+			sts = "FAIL"
+			msg = "El token de acceso ha expirado o no existe"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':'El token de acceso ha expirado o no existe'})
+
 @app.route('/recuperar_password/')
 def recuperar_password():
 	botonesSesion()
@@ -107,9 +138,9 @@ def registrar():
 		fecha   = time.strftime("%Y-%m-%d")
 		token   = bcrypt.gensalt().decode("utf-8")
 		hash    = funciones.crear_hash(password).decode("utf-8")
-		last_id = consultas.qry_registrar_usuario(email, token, hash, fecha, "5", "8")
+		last_id = consultas.qry_registrar_usuario(email, token + '/?edwin', hash, fecha, "5", "8")
 		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac", num_doc, "1", nombres, apellidos, telefono, direccion)
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token + '/?edwin')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
@@ -130,9 +161,9 @@ def registrarMedico():
 		fecha        = time.strftime("%Y-%m-%d")
 		token        = bcrypt.gensalt().decode("utf-8")
 		hash         = funciones.crear_hash(password).decode("utf-8")
-		last_id      = consultas.qry_registrar_medico(email, token, hash, fecha, "5", "8")
+		last_id      = consultas.qry_registrar_medico(email, token + '/?edwin', hash, fecha, "5", "8")
 		consultas.qry_registrar_userIdMedico(str(last_id), "medicos", "med", num_doc, "1", nombres, apellidos, telefono, direccion, especialidad)
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token + '/?edwin')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
@@ -157,6 +188,25 @@ def activarCuenta():
 			return "Error en el sistema, reintentelo mas tarde"
 	except Exception as e:
 		return "Error en el sistema, reintentelo mas tarde"
+
+@app.route('/restablecer/', methods=['GET'])
+def restablecerPass():
+	try:
+		if request.method == 'GET':
+			token = request.args.get('token')
+			datos = token.split(":::")
+			email = datos[0]
+			token = datos[1]
+			result = consultas.qry_verificar_token_password(email, token)
+			if result:
+				return render_template("restablecer.html", token = token, email = email)
+			else:
+				msg = "El token de acceso ha expirado o no existe"
+			return msg
+		else:
+			return render_template("error_404.html"), 404
+	except Exception as e:
+		return render_template("error_404.html"), 404
 
 @app.route('/panel/')
 def panel():
