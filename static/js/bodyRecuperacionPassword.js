@@ -12,15 +12,14 @@ $(function() {
           success: function(response) {
             if (response.status == "OK") {
               $("#msgRecuperarPassword #mensajeOk").text(response.msg);
-              $('#modalModificarPassword').modal('hide');
               showMensaje("#msgRecuperarPassword", "Ok");
             }else if(response.status == "FAIL"){
-              $("#msgRecuperarPassword #mensajeFail").text(response.msg);
+              $("#msgRecuperarPassword #mensajeOk").text(response.msg);
               showMensaje("#msgRecuperarPassword", "Ok");
             }
           },
           error: function(error) {
-            console.log(error)
+            $("#msgRecuperarPassword #mensajeOk").text(response.msg);
             showMensaje("#msgRecuperarPassword", "Ok");
           }
       });
