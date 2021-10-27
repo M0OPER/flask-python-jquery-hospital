@@ -194,6 +194,19 @@ def qry_listar_medicos_administrador(texto):
     print(e, file=sys.stderr)
     return "Error al cargar datos"
 
+def qry_listar_pacientes_administrador(texto):
+  try:
+    qry = "SELECT pac_usuario_id, pac_nombres, pac_apellidos, pac_identificacion, usu_estado FROM pacientes, usuarios WHERE usu_id = pac_usuario_id " + texto + " ORDER BY pac_nombres ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 #DETALLES CITAS
 def qry_cargar_especialidades_solicitar_cita():
   try:

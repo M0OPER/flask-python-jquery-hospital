@@ -140,7 +140,8 @@ def panel():
 				tipo_pacientes    = consultas.qry_soporte("PACA")
 				listado_citas     = consultas.qry_listar_citas_administrador("")
 				listado_medicos   = consultas.qry_listar_medicos_administrador("")
-				return render_template('administrador.html', tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, listado_citas = listado_citas, listado_medicos = listado_medicos)
+				listado_pacientes = consultas.qry_listar_pacientes_administrador("")
+				return render_template('administrador.html', tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, tipo_pacientes = tipo_pacientes, listado_citas = listado_citas, listado_medicos = listado_medicos, listado_pacientes = listado_pacientes)
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
@@ -187,6 +188,17 @@ def listarMedicosAdministradores():
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
 
+@app.route('/listarPacientesAdministradores', methods=['POST'])
+def listarPacientesAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_pacientes_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
 @app.route('/usuario/')
 def usuario():
 	botonesSesion()
@@ -195,6 +207,19 @@ def usuario():
 	else:
 		datos = consultas.qry_cargar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]))
 		return render_template("usuario.html", datos = datos)
+
+@app.route('/detallesUsuario', methods=['POST'])
+def detallesUsuario():
+	try:
+		id	 		= request.form['id']
+		rol 		= request.form['rol']
+		usuario = request.form['usua']
+		datos = consultas.qry_cargar_usuario(id, rol, usuario)
+		msg = "Datos cargados con exito"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos': datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/actualizarUsuario', methods=['POST'])
 def actualizarUsuario():
