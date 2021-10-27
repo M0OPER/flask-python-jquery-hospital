@@ -51,7 +51,7 @@ $(function() {
         showMensaje("#msgSolicitar", "Fail");
     }else{
       $.ajax({
-        url: '/solicitarCita',
+        url: '/solicitarCita', 
         data: { medi : $("#scMedico").val(),
                 fechaHora : $("#scFecha").val() + " " + $("#scHora").val() + ":00",
                 deta : $("#scDetalles").val()},
