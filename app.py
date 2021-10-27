@@ -134,7 +134,13 @@ def panel():
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
-				return render_template('/administrador.html')
+				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "administradores", "adm")[0]
+				tipo_citas        = consultas.qry_soporte("CITD")
+				tipo_medicos      = consultas.qry_soporte("MEDA")
+				tipo_pacientes    = consultas.qry_soporte("PACA")
+				listado_citas     = consultas.qry_listar_citas_administrador("")
+				listado_medicos   = consultas.qry_listar_medicos_administrador("")
+				return render_template('administrador.html', tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, listado_citas = listado_citas, listado_medicos = listado_medicos)
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
@@ -158,7 +164,28 @@ def listarCitasPacientes():
 		return ({'status':sts,'msg':msg, 'datos':datos})
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
-#AND med_apellidos LIKE '%b%' OR med_nombres LIKE '%b%' 
+
+@app.route('/listarCitasAdministradores', methods=['POST'])
+def listarCitasAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_citas_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/listarMedicosAdministradores', methods=['POST'])
+def listarMedicosAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_medicos_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/usuario/')
 def usuario():
@@ -166,8 +193,47 @@ def usuario():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		#datos = consultas.qry_cargar_usuario(str(session["codigo"]))
-		return render_template("usuario.html")
+		datos = consultas.qry_cargar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]))
+		return render_template("usuario.html", datos = datos)
+
+@app.route('/actualizarUsuario', methods=['POST'])
+def actualizarUsuario():
+	try:
+		nombres 				 = request.form['nomb']
+		apellidos 			 = request.form['apel']
+		telefono 			 	 = request.form['tele']
+		direccion 		 	 = request.form['dire']
+		fecha_nacimiento = request.form['fech']
+		edad 	 					 = request.form['edad']
+		sexo 	 					 = request.form['sexo']
+		consultas.qry_actualizar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]), nombres, apellidos, telefono, direccion, fecha_nacimiento, edad, sexo)
+		msg = "Datos guardados con exito"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/bloquearUsuario', methods=['POST'])
+def bloquearUsuario():
+	try:
+		usua = request.form['usua']
+		consultas.qry_bloquear_usuario(usua)
+		msg = "Usuario bloqueado"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/desbloquearUsuario', methods=['POST'])
+def desbloquearUsuario():
+	try:
+		usua = request.form['usua']
+		consultas.qry_desbloquear_usuario(usua)
+		msg = "Usuario desbloqueado"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/contactos/')
 def contactos():

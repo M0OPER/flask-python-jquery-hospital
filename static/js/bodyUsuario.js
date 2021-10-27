@@ -1,3 +1,39 @@
+$(function() {
+
+  $('#duActualizar').bind('click', function() {
+    if ($("#duNombres").val() == "" || $("#duApellidos").val() == "" || $("#duTelefono").val() == "" || $("#duDireccion").val() == "") {
+      $("#msgUsuario #mensajeFail").text("Hay campos necesarios sin rellenar");
+        showMensaje("#msgUsuario", "Fail");
+    }else{
+    $.ajax({
+          url: '/actualizarUsuario',
+          data: { nomb : $("#duNombres").val(),
+                  apel : $("#duApellidos").val(),
+                  tele : $("#duTelefono").val(),
+                  dire : $("#duDireccion").val(),
+                  fech : $("#duFechaNacimiento").val(),
+                  edad : $("#duEdad").val(),
+                  sexo : $("#duSexo").val()},
+          type: 'post',
+          success: function(response) {
+            if (response.status == "OK") {
+              $("#msgUsuario #mensajeOk").text(response.msg);
+              showMensaje("#msgUsuario", "Ok");
+            }else if(response.status == "FAIL"){
+              $("#msgUsuario #mensajeFail").text(response.msg);
+              showMensaje("#msgUsuario", "Fail");
+            }
+          },
+          error: function(error) {
+            console.log(error)
+            showMensaje("#msgUsuario", "Server");
+          }
+      });
+    }
+    return false;
+  });
+
+});
 document.write(`
 
 <!-- Modal Modificar Contraseña-->
