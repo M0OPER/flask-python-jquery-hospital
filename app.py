@@ -64,6 +64,24 @@ def cerrarSesion():
 		msg = e
 		return ({'status':'FAIL','msg':msg})
 
+@app.route('/cambiarPassword', methods=['POST'])
+def cambiarPassword():
+	try:
+		old = request.form['old']
+		new = request.form['new']
+		hash_db = consultas.qry_verificar_password(str(session["id_usuario"]))[0]
+		if bcrypt.checkpw(old.encode(), hash_db.encode()):
+			hash    = funciones.crear_hash(new).decode("utf-8")
+			consultas.qry_cambiar_password(str(session["id_usuario"]), hash)
+			sts = "OK"
+			msg = "Nueva contraseña guardada"
+		else:
+			sts = "FAIL"
+			msg = "Contraseña incorrecta"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
 @app.route('/recuperar_password/')
 def recuperar_password():
 	botonesSesion()

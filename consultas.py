@@ -30,6 +30,31 @@ def qry_iniciar_sesion(email):
     print(e, file=sys.stderr)
     return "Error al guardar datos"
 
+def qry_verificar_password(id):
+  try:
+    qry = "SELECT usu_hash_pass FROM usuarios WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al guardar datos"
+
+def qry_cambiar_password(id, hash):
+  try:
+    qry = "UPDATE usuarios SET usu_hash_pass = '" + hash + "' WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_cargar_usuario(id, rol, usuario):
   try:
     qry = "SELECT " + rol + "_nombres, " + rol + "_apellidos, sop_datos, " + rol + "_identificacion, " + rol + "_telefono, " + rol + "_direccion, " + rol + "_fecha_nacimiento, " + rol + "_edad, " + rol + "_sexo, usu_email FROM usuarios, soporte INNER JOIN " + usuario + " on usu_id = " + rol + "_usuario_id WHERE " + rol + "_id = " + id + " AND " + rol + "_tipo_identificacion = sop_id "
