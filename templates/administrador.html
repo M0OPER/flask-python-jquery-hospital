@@ -101,12 +101,14 @@
                 <td>{% print(datos[1]) %}</td>
                 <td>{% print(datos[2]) %}</td>
                 <td>{% print(datos[3]) %}</td>
-                <td><i id="" idusuario="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>
+                <td><i rol="med" usuario="medicos" idusuario="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>
                 <td>
                   {% if datos[4] == 10 %}
                     <i id="" idusuario="{% print(datos[0]) %}" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i>
                   {% elif datos[4] == 9 %}
                     <i id="" idusuario="{% print(datos[0]) %}" class="bi bi-unlock-fill close manita float-left desbloquearUsuario" aria-label="Close"></i>
+                  {% else %}
+                  Falta activar
                   {% endif %}
                 </td>
               </tr>
@@ -116,7 +118,7 @@
       </div>
     </div>
   </div>
-  <button id="pnlCrearMedico" type="button" class="btn btn-verde btn-lg">CREAR MEDICO</button>
+  <button id="pnlCrearMedico" type="button" class="btn btn-verde btn-lg" data-toggle="modal" data-target="#modalRegistrarMedico">REGISTRAR MEDICO</button>
 </div>
 {% endblock %}
 {% block panel_pacientes %}
@@ -125,7 +127,14 @@
     <div class="form-group">
       <div class="row">
         <div class="col-4">
-          <input id="pnlBuscar" name="pnlBuscar" type="text" class="form-control" placeholder="BUSCAR PACIENTES...">
+          <input id="pnlBuscarPacientesAdministradores" type="text" class="form-control" placeholder="BUSCAR PACIENTES...">
+        </div>
+        <div class="col-2">
+          <select class="form-control text-white bg-dark manita" id="pnlBuscarSeleccionPacientes">
+            {% for tipo in tipo_pacientes %}
+            <option value="{% print(tipo[2]) %}">{% print(tipo[3]) %}</option>
+            {% endfor %}
+        </select>
         </div>
         <div class="col-2 ">
           <i class="bi bi-search close manita float-left" aria-label="Close"></i>
@@ -140,41 +149,31 @@
             <tr>
               <th scope="col">#</th>
               <th scope="col">NOMBRES</th>
-              <th scope="col">CEDULA</th>
-              <th scope="col">CITAS ASIGNADAS</th>
+              <th scope="col">APELLIDOS</th>
+              <th scope="col">N° IDENTIFICACION</th>
               <th scope="col">DETALLES</th>
-              <th scope="col">EDITAR</th>
-              <th scope="col">BLOQUEAR</th>
+              <th scope="col">LOCK / UNLOCK</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>JUANCHO POLO GRACIAS</td>
-              <td>12/12/2020</td>
-              <td>12:00 PM</td>
-              <td><i class="bi bi-eye-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-pencil-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-x-square-fill close manita float-left" aria-label="Close"></i></td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-              <td><i class="bi bi-eye-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-pencil-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-x-square-fill close manita float-left" aria-label="Close"></i></td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-              <td><i class="bi bi-eye-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-pencil-fill close manita float-left" aria-label="Close"></i></td>
-              <td><i class="bi bi-x-square-fill close manita float-left" aria-label="Close"></i></td>
-            </tr>
+          <tbody  id="tblPacientesAdministradores">
+            {% for datos in listado_pacientes %}
+              <tr>
+                <th scope="row">{{loop.index}}</th>
+                <td>{% print(datos[1]) %}</td>
+                <td>{% print(datos[2]) %}</td>
+                <td>{% print(datos[3]) %}</td>
+                <td><i rol="pac" usuario="pacientes" idusuario="{% print(datos[0]) %}" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>
+                <td>
+                  {% if datos[4] == 10 %}
+                    <i id="" idusuario="{% print(datos[0]) %}" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i>
+                  {% elif datos[4] == 9 %}
+                    <i id="" idusuario="{% print(datos[0]) %}" class="bi bi-unlock-fill close manita float-left desbloquearUsuario" aria-label="Close"></i>
+                  {% else %}
+                    Falta activar
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -183,4 +182,84 @@
 </div>
 </div>
 <script type="text/javascript" src="../static/js/bodyAdministradores.js"></script>
+
+<!-- Modal Registrar Medico-->
+<div class="modal fade" id="modalRegistrarMedico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        REGISTRAR MEDICO<i class="bi bi-x-circle-fill close manita" data-dismiss="modal" aria-label="Close"></i>
+      </div>
+      <div class="modal-body">
+      <div class="form-group">
+      <div class="row">
+      <div class="col">
+       <input id="rmNombres" name="rmNombres" type="text" class="form-control" placeholder="Nombres">
+      </div>
+      <div class="col">
+       <input id="rmApellidos" name="rmApellidos" type="text" class="form-control" placeholder="Apellidos" required>
+      </div>
+     </div>
+     </div>
+
+     <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <select id="rmTipoDocumento" class="form-control">
+         <option value="0">--Tipo de documento--</option>
+         {% for tdocs in tipo_docs %}
+         <option value="{% print(tdocs[0]) %}">{% print(tdocs[2]) %}</option>
+         {% endfor %}
+       </select>
+      </div>
+      <div class="col">
+       <input id="rmNumeroDocumento" type="number" class="form-control" placeholder="Numero de documento" required>
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <input id="rmEmail" type="email" class="form-control" aria-describedby="emailHelp" placeholder="Correo electronico" autocomplete="off">
+       <small id="emailHelp" class="form-text text-muted">No compartiremos tu correo con nadie más.</small>
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+       <input id="rmTelefono" type="number" class="form-control" placeholder="Telefono">
+      </div>
+      <div class="col">
+       <input id="rmDireccion" type="text" class="form-control" placeholder="Direccion">
+      </div>
+     </div>
+    </div>
+
+    <div class="form-group">
+     <div class="row">
+      <div class="col">
+        <select id="rmTipoEspecialidad" class="form-control">
+          <option value="0">--Tipo de especialidad--</option>
+          {% for datos in tipo_especialidad %}
+          <option value="{% print(datos[0]) %}">{% print(datos[2]) %}</option>
+          {% endfor %}
+        </select>
+       </div>
+      <div class="col">
+       <input id="rmPassword" type="password" class="form-control" placeholder="Confirma contraseña" >
+      </div>
+     </div>
+     <small id="passwordHelp" class="form-text text-muted">La contraseña debe tener mas de 7 caracteres.</small>
+    </div>
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+        <div id="msgRegistrarMedico"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button id="rmRegistrarMedico" type="" class="btn btn-verde">REGISTRAR MEDICO</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
