@@ -225,6 +225,7 @@ def panel():
 			return boton + '<h3>Usuario bloqueado, intente contactar via correo con el administrador</h3>'
 		else:
 			flash(session["paneles"], "paneles")
+			fecha   		 = time.strftime("%Y-%m-%d")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "administradores", "adm")[0]
 				tipo_citas        = consultas.qry_soporte("CITD")
@@ -245,7 +246,7 @@ def panel():
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "pacientes", "pac")[0]
 				tipo_citas = consultas.qry_soporte("CITP")
 				listado_citas = consultas.qry_listar_citas_paciente(str(session["codigo"]), "")
-				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"])
+				return render_template("pacientes.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"], fecha = fecha)
 			else:
 				return "Error dentro del servidor"
 

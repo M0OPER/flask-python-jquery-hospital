@@ -93,10 +93,10 @@
             <div class="form-group">
               <div class="row">
                 <div class="col">
-                  <input id="scFecha" name="scFecha" type="date" class="form-control">
+                  <input id="scFecha" name="scFecha" type="date" class="form-control" min='{% if fecha %}{% print(fecha) %}{% endif %}'>
                 </div>
                 <div class="col">
-                  <input id="scHora" name="scHora" type="time" class="form-control"d>
+                  <input id="scHora" name="scHora" type="time" class="form-control">
                 </div>
               </div>
               <small class="form-text text-muted">El formato de la hora es de 12 horas.</small>
