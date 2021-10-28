@@ -46,7 +46,7 @@ $(function() {
   });
 
   $(document).on('click', "#scSolicitar", function() {
-    if ($("#scMedico").val() == 0) { 
+    if ($("#scMedico").val() == 0 || $("#scCita").val() == 0 || $("#iniciarSn").val() == 0 || $("#ActDatos").val() == 0 || $("#AtenderCitas").val() == 0 ){ 
       $("#msgSolicitar #mensajeFail").text("Hay campos necesarios sin rellenar");
         showMensaje("#msgSolicitar", "Fail");
     }else{
@@ -54,7 +54,11 @@ $(function() {
         url: '/solicitarCita', 
         data: { medi : $("#scMedico").val(),
                 fechaHora : $("#scFecha").val() + " " + $("#scHora").val() + ":00",
-                deta : $("#scDetalles").val()},
+                deta : $("#scDetalles").val(),
+                scita : $("#scCita").val(),
+                sesion : $("#iniciarSn").val(),
+                datosAct : $("#ActDatos").val(),
+                atender : $("#AtenderCitas").val()},
         type: 'post',
         success: function(response) { 
           if (response.status == "OK") {
