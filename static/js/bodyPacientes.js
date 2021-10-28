@@ -47,8 +47,8 @@ $(function() {
 
   $(document).on('click', "#scSolicitar", function() {
     if ($("#scMedico").val() == 0 || $("#scCita").val() == 0 || $("#iniciarSn").val() == 0 || $("#ActDatos").val() == 0 || $("#AtenderCitas").val() == 0 ){ 
-      $("#msgSolicitar #mensajeFail").text("Hay campos necesarios sin rellenar");
-        showMensaje("#msgSolicitar", "Fail");
+      $("#msgSolicitarCita #mensajeFail").text("Hay campos necesarios sin rellenar");
+        showMensaje("#msgSolicitarCita", "Fail");
     }else{
       $.ajax({
         url: '/solicitarCita', 
@@ -67,13 +67,13 @@ $(function() {
             showMensaje("#msgPanel", "Ok");
             location.reload();
           }else if(response.status == "FAIL"){
-            $("#msgSolicitar #mensajeFail").text(response.msg);
-            showMensaje("#msgSolicitar", "Fail");
+            $("#msgSolicitarCita #mensajeFail").text(response.msg);
+            showMensaje("#msgSolicitarCita", "Fail");
           }
         },
         error: function(error) {
           console.log(error)
-          showMensaje("#msgSolicitar", "Server");
+          showMensaje("#msgSolicitarCita", "Server");
         }
     });
   return false;
@@ -148,11 +148,39 @@ $('#scEspecialidad').on('change', function() {
         var medicos = "<option value='0'>--Seleccionar--</option>";
         $("#msgSolicitarCita #mensajeOk").text("Ahora seleccione el medico");
         for (let index = 0; index < response.datos.length; index++) {
-          medicos += "<option value='" + response.datos[index][0] + "'>" + response.datos[index][1] + "</option>"
+          medicos += "<option limite='" + response.datos[index][2] + "' value='" + response.datos[index][0] + "'>" + response.datos[index][1] + "</option>"
         }
         $("#scMedico").html(medicos);
         showMensaje("#msgSolicitarCita", "Ok");
         $("#scMedico").removeAttr('disabled');
+      }else if(response.status == "FAIL"){
+        $("#msgSolicitarCita #mensajeFail").text(response.msg);
+        showMensaje("#msgSolicitarCita", "Fail");
+      }
+    },
+    error: function(error) {
+      console.log(error)
+      showMensaje("#msgSolicitarCita", "Server");
+    }
+});
+return false;
+});
+
+$('#scMedico').on('change', function() {
+  var limite = $('option:selected', this).attr('limite');
+  $.ajax({
+    url: '/verificarMedicosSolicitarCita',
+    data: { id : this.value},
+    type: 'post', 
+    success: function(response) {   
+      if (response.status == "OK") {
+        if (response.datos[0] == limite) {
+          $("#scSolicitar").attr("disabled", true);
+          $("#msgSolicitarCita #mensajeFail").text("Este mèdico alcanzò el limite de citas");
+          showMensaje("#msgSolicitarCita", "Fail");
+        }else{
+          $('#scSolicitar').removeAttr('disabled');
+        }
       }else if(response.status == "FAIL"){
         $("#msgSolicitarCita #mensajeFail").text(response.msg);
         showMensaje("#msgSolicitarCita", "Fail");

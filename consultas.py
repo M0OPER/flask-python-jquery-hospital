@@ -195,9 +195,9 @@ def qry_registrar_userId(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos
   except Error as e:
     print("error", file=sys.stderr)
 
-def qry_registrar_userIdMedico(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion, especialidad):
+def qry_registrar_userIdMedico(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion, limite, especialidad):
   try:
-    qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, med_identificacion, med_tipo_identificacion, med_nombres, med_apellidos, med_telefono, med_direccion, med_especialidad_id) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "', " + especialidad + ");"
+    qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, med_identificacion, med_tipo_identificacion, med_nombres, med_apellidos, med_telefono, med_direccion, med_limite_citas, med_especialidad_id) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "', " + limite + ", " + especialidad + ");"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -321,11 +321,23 @@ def qry_cargar_especialidades_solicitar_cita():
 
 def qry_cargar_medicos_solicitar_cita(especialidad):
   try:
-    qry = "SELECT med_id, med_nombres || ' ' || med_apellidos as nombres FROM medicos WHERE med_especialidad_id =" + especialidad
+    qry = "SELECT med_id, med_nombres || ' ' || med_apellidos as nombres, med_limite_citas FROM medicos, usuarios WHERE med_usuario_id = usu_id AND usu_estado = 10 AND med_especialidad_id =" + especialidad
     con = sql_connection()
     cur = con.cursor()
     cur.execute(qry)
     result = cur.fetchall()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_verificar_medicos_solicitar_cita(id):
+  try:
+    qry = "SELECT COUNT(cit_medico_id) FROM citas WHERE cit_medico_id = " + id
+    con = sql_connection()
+    cur = con.cursor()
+    cur.execute(qry)
+    result = cur.fetchone()
     return result
   except Error as e:
     print(e, file=sys.stderr)

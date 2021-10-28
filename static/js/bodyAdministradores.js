@@ -56,7 +56,7 @@ return false;
             <td>' + response.datos[index][1] + '</td> \
             <td>' + response.datos[index][2] + '</td> \
             <td>' + response.datos[index][3] + '</td> \
-            <td><i idusuario="' + response.datos[index][0] + '" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>'
+            <td><i rol="med" usuario="medicos" idusuario="' + response.datos[index][0] + '" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>'
             if (response.datos[index][4] == 10) {
               medicos += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i></td>'
             }else if(response.datos[index][4] == 9){
@@ -97,7 +97,7 @@ return false;
             <td>' + response.datos[index][1] + '</td> \
             <td>' + response.datos[index][2] + '</td> \
             <td>' + response.datos[index][3] + '</td> \
-            <td><i idusuario="' + response.datos[index][0] + '" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>'
+            <td><i rol="pac" usuario="pacientes" idusuario="' + response.datos[index][0] + '" class="bi bi-eye-fill close manita float-left detallesUsuario" aria-label="Close"></i></td>'
             if (response.datos[index][4] == 10) {
               pacientes += '<td><i idusuario="' + response.datos[index][0] + '" class="bi bi-lock-fill close manita float-left bloquearUsuario" aria-label="Close"></i></td>'
             }else if(response.datos[index][4] == 9){
@@ -241,6 +241,7 @@ return false;
                   tele : $("#rmTelefono").val(),
                   dire : $("#rmDireccion").val(),
                   pass : $("#rmPassword").val(),
+                  limi : $("#rmLimite").val(),
                   espe : $("#rmTipoEspecialidad").val()},
           type: 'post',
           success: function(response) {

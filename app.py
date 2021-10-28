@@ -157,12 +157,13 @@ def registrarMedico():
 		telefono     = request.form['tele']
 		direccion    = request.form['dire']
 		password     = request.form['pass']
+		limite    	 = request.form['limi']
 		especialidad = request.form['espe']
 		fecha        = time.strftime("%Y-%m-%d")
 		token        = bcrypt.gensalt().decode("utf-8")
 		hash         = funciones.crear_hash(password).decode("utf-8")
-		last_id      = consultas.qry_registrar_medico(email, token + '/?edwin', hash, fecha, "5", "8")
-		consultas.qry_registrar_userIdMedico(str(last_id), "medicos", "med", num_doc, "1", nombres, apellidos, telefono, direccion, especialidad)
+		last_id      = consultas.qry_registrar_medico(email, token + '/?edwin', hash, fecha, "4", "8")
+		consultas.qry_registrar_userIdMedico(str(last_id), "medicos", "med", num_doc, "1", nombres, apellidos, telefono, direccion, limite, especialidad)
 		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token + '/?edwin')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
@@ -400,6 +401,17 @@ def cargarMedicosSolicitarCita():
 		datos  				= consultas.qry_cargar_medicos_solicitar_cita(especialidad)
 		msg = "Datos cargados correctamente"
 		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/verificarMedicosSolicitarCita', methods=['POST'])
+def verificarMedicosSolicitarCita():
+	try:
+		id    = request.form['id']
+		datos = consultas.qry_verificar_medicos_solicitar_cita(id)
+		msg   = "Datos cargados correctamente"
+		sts   = "OK"
 		return ({'status':sts,'msg':msg, 'datos':datos})
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})

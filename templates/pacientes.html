@@ -21,7 +21,7 @@
       <hr>
       <h6>LISTADO CITAS</h6>
       <hr>
-      <div>
+      <div class="overflow-auto">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -85,7 +85,7 @@
                </select>
             </div>
             <div class="form-group">
-              <label for="scMedico">Médico</label>
+              <label for="scMedico">Médicos disponibles</label>
               <select class="form-control text-white bg-dark manita" id="scMedico" disabled>
                 <option value='0'>--Seleccionar--</option>
                </select>
@@ -103,14 +103,13 @@
             </div>
             <div class="form-group">
               <label for="scDetalles">Detalles</label>
-              <textarea id="scDetalles" class="form-control" rows="2">
-              </textarea>
+              <textarea id="scDetalles" class="form-control" rows="2"></textarea>
             </div>
           </fieldset>
         </form>
       </div>
       <div class="modal-footer modalFoot" align="center">
-        <div id="msgSolicitar"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <div id="msgSolicitarCita"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
         <button id="scSolicitar" type="button" class="btn btn-verde">SOLICITAR CITA</button>
       </div>
     </div>

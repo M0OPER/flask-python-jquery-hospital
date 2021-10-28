@@ -82,7 +82,7 @@
       <hr>
       <h6>LISTADO MEDICOS</h6>
       <hr>
-      <div>
+      <div class="overflow-auto">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -143,7 +143,7 @@
       <hr>
       <h6>LISTADO PACIENTES</h6>
       <hr>
-      <div>
+      <div class="overflow-auto">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -247,6 +247,9 @@
           <option value="{% print(datos[0]) %}">{% print(datos[2]) %}</option>
           {% endfor %}
         </select>
+       </div>
+       <div class="col">
+        <input id="rmLimite" type="number" class="form-control" placeholder="Digita limite de citas" >
        </div>
       <div class="col">
        <input id="rmPassword" type="password" class="form-control" placeholder="Confirma contraseña" >
