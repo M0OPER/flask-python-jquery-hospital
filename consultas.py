@@ -291,7 +291,7 @@ def qry_listar_medicos_administrador(texto):
     return result
   except Error as e:
     print(e, file=sys.stderr)
-    return "Error al cargar datos"
+    return "Error al cargar datos "
 
 def qry_listar_pacientes_administrador(texto):
   try:

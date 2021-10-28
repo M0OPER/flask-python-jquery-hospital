@@ -42,7 +42,7 @@
           showMensaje("#msgRegistro", "Fail");
           $("#regRegistrar").attr("disabled", true);
         }else{
-          $("#msgRegistro #mensajeOk").text("Las contraseñas coinciden!");
+          $("#msgRegistro #mensajeOk").text("Las contraseñas  coinciden!");
           showMensaje("#msgRegistro", "Ok");
           $('button[id="regRegistrar"]').removeAttr('disabled');
         }

@@ -7,7 +7,7 @@ def verificarSesion():
 	else:
 		session["tipo_usuario"] = "INVITADO"
 		session["online"] = False
-		msg = "Bienvenido al sistema"
+		msg = "Bienvenido al sistema "
 	return msg
 
 def iniciarSesion(tip, name, estado, id):
