@@ -10,8 +10,11 @@ edwinrafaelmontesmeza@gmail.com => admin1234
 
 MEDICOS PRECREADOS PARA PROBAR EL SISTEMA 
 med45@hotmail.com      => easy1234
-godred129922@gmail.com => easy1234
+godred12992@gmail.com => easy1234
 
 PACIENTES PRECREADOS PARA PROBAR EL SISTEMA 
 godred1299@gmail.com          => easy1234
 manuelrafaelbonilla@gmail.com => pindi1234
+
+edwinrafaelmontesmeza@gmail.com
+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

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}RECUPERACION{% endblock %}
+{% block navegacion %}
+  <a href="/inicio"><button type="button" class="btn btn-light">INICIO</button></a>
+  {% with messages = get_flashed_messages(category_filter=["botonPanel"]) %}
+    {% if messages %}
+      {% for message in messages %}
+        {{ message }} 
+      {% endfor %} 
+    {% endif %}
+  {% endwith %}
+  <a href="/contactos"><button type="button" class="btn btn-light">CONTACTOS</button></a>
+  <a href="/servicios"><button type="button" class="btn btn-light">SERVICIOS</button></a>
+{% endblock %}
+{% block contenido %}
+ <script type="text/javascript" src="../static/js/bodyRestablecerPassword.js"></script>
+ <div class="" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header modalHead">
+        RESTABLECER CONTRASEÑA
+      </div>
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label for="rcPassword1">Contraseña Nueva</label>
+          <input id="rcPassword1" type="password" class="form-control"  aria-describedby="emailHelp" autofocus>
+        </div>
+        <div class="form-group">
+          <label for="rcPassword2">Confirmar contraseña nueva</label>
+          <input id="rcPassword2" type="password" class="form-control"  aria-describedby="emailHelp">
+        </div>
+       
+      </div>
+      <div class="modal-footer modalFoot" align="center">
+       <div id="msgRestablecerPassword"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+        <button {% if token %} token="{% print(token) %}" {% endif %} {% if token %} email="{% print(email) %}" {% endif %} id="rcRestablecerPassword" type="" class="btn btn-verde">RESTABLECER CONTRASEÑA</button> 
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

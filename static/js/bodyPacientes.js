@@ -46,29 +46,34 @@ $(function() {
   });
 
   $(document).on('click', "#scSolicitar", function() {
-    $.ajax({
-          url: '/solicitarCita',
-          data: { medi : $("#scMedico").val(),
-                  fechaHora : $("#scFecha").val() + " " + $("#scHora").val() + ":00",
-                  deta : $("#scDetalles").val()},
-          type: 'post', 
-          success: function(response) { 
-            if (response.status == "OK") {
-              $("#msgPanel #mensajeOk").text("Ahora falta a que te acepten la cita pendiente, se te dará un aviso por correo");
-              $('#modalSolicitarCita').modal('hide');
-              showMensaje("#msgPanel", "Ok");
-              location.reload();
-            }else if(response.status == "FAIL"){
-              $("#msgSolicitarCita #mensajeFail").text(response.msg);
-              showMensaje("#msgSolicitarCita", "Fail");
-            }
-          },
-          error: function(error) {
-            console.log(error)
-            showMensaje("#msgSolicitarCita", "Server");
+    if ($("#scMedico").val() == 0) { 
+      $("#msgSolicitar #mensajeFail").text("Hay campos necesarios sin rellenar");
+        showMensaje("#msgSolicitar", "Fail");
+    }else{
+      $.ajax({
+        url: '/solicitarCita', 
+        data: { medi : $("#scMedico").val(),
+                fechaHora : $("#scFecha").val() + " " + $("#scHora").val() + ":00",
+                deta : $("#scDetalles").val()},
+        type: 'post',
+        success: function(response) { 
+          if (response.status == "OK") {
+            $("#msgPanel #mensajeOk").text("Ahora falta a que te acepten la cita pendiente, se te dará un aviso por correo");
+            $('#modalSolicitarCita').modal('hide');
+            showMensaje("#msgPanel", "Ok");
+            location.reload();
+          }else if(response.status == "FAIL"){
+            $("#msgSolicitar #mensajeFail").text(response.msg);
+            showMensaje("#msgSolicitar", "Fail");
           }
-      });
-    return false;
+        },
+        error: function(error) {
+          console.log(error)
+          showMensaje("#msgSolicitar", "Server");
+        }
+    });
+  return false;
+    }
 });
 
 $(document).on('click', "#pnlSolicitarCita", function() {
@@ -158,6 +163,7 @@ return false;
 });
 
 });
+
 document.write(`
 
 <div class="modal fade" id="modalComentarCita" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

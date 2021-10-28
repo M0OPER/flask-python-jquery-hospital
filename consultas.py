@@ -30,6 +30,122 @@ def qry_iniciar_sesion(email):
     print(e, file=sys.stderr)
     return "Error al guardar datos"
 
+def qry_verificar_password(id):
+  try:
+    qry = "SELECT usu_hash_pass FROM usuarios WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al guardar datos"
+
+def qry_cambiar_password(id, hash):
+  try:
+    qry = "UPDATE usuarios SET usu_hash_pass = '" + hash + "' WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_cambiar_password_reco(email, hash):
+  try:
+    qry = "UPDATE usuarios SET usu_hash_pass = '" + hash + "', usu_token_reco = '' WHERE usu_email = '" + email + "'"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_restablecer_password(email, token):
+  try:
+    qry = "UPDATE usuarios SET usu_token_reco = '" + token + "' WHERE usu_email = '" + email + "'"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "OK"
+  except sqlite3.Error as error:
+    print(error, file=sys.stderr)
+    return "ERROR"
+
+def qry_cargar_usuario(id, rol, usuario):
+  try:
+    qry = "SELECT " + rol + "_nombres, " + rol + "_apellidos, sop_datos, " + rol + "_identificacion, " + rol + "_telefono, " + rol + "_direccion, " + rol + "_fecha_nacimiento, " + rol + "_edad, " + rol + "_sexo, usu_email FROM usuarios, soporte INNER JOIN " + usuario + " on usu_id = " + rol + "_usuario_id WHERE " + rol + "_id = " + id + " AND " + rol + "_tipo_identificacion = sop_id "
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    print(qry, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_detalles_usuario(id, rol, usuario):
+  try:
+    qry = "SELECT " + rol + "_nombres, " + rol + "_apellidos, sop_datos, " + rol + "_identificacion, " + rol + "_telefono, " + rol + "_direccion, " + rol + "_fecha_nacimiento, " + rol + "_edad, " + rol + "_sexo, usu_email FROM usuarios, soporte INNER JOIN " + usuario + " on usu_id = " + rol + "_usuario_id WHERE " + rol + "_usuario_id = " + id + " AND " + rol + "_tipo_identificacion = sop_id "
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
+    print(qry, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_actualizar_usuario(id, rol, usuario, nombres, apellidos, telefono, direccion, fecha_nacimiento, edad, sexo):
+  try:
+    qry = "UPDATE " + usuario + " SET " + rol + "_nombres = '" + nombres + "', " + rol + "_apellidos = '" + apellidos + "', " + rol + "_telefono = " + telefono + ", " + rol + "_direccion = '" + direccion + "', " + rol + "_fecha_nacimiento = '" + fecha_nacimiento + "', " + rol + "_edad = " + edad + ", " + rol + "_sexo = " + sexo + " WHERE " + rol + "_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_bloquear_usuario(id):
+  try:
+    qry = "UPDATE usuarios SET usu_estado = 9 WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_desbloquear_usuario(id):
+  try:
+    qry = "UPDATE usuarios SET usu_estado = 10 WHERE usu_id = " + id
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Datos guardados con exito"
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
 def qry_session_id(id, rol, usuario):
   try:
     qry = "SELECT " + usuario + "_id FROM usuarios, " + rol + " WHERE usu_id = '" + id + "' AND usu_id = " + usuario + "_usuario_id"
@@ -54,9 +170,34 @@ def qry_registrar_usuario(email, token, hash, fecha, rol, estado):
   except Error as e:
     print(e, file=sys.stderr)
 
+def qry_registrar_medico(email, token, hash, fecha, rol, estado):
+  try:
+    qry = "INSERT INTO usuarios (usu_email, usu_token, usu_hash_pass, usu_created_at, usu_tipo_usu, usu_estado) VALUES ('" + email + "', '" + token + "', '" + hash + "', '" + fecha + "', " + rol + ", " + estado + ");"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    last_id = cursorObj.lastrowid
+    con.commit()
+    con.close()
+    return last_id
+  except Error as e:
+    print(e, file=sys.stderr)
+
 def qry_registrar_userId(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion):
   try:
     qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, pac_identificacion, pac_tipo_identificacion, pac_nombres, pac_apellidos, pac_telefono, pac_direccion) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "');"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    con.commit()
+    con.close()
+    return "Guardada con exito"
+  except Error as e:
+    print("error", file=sys.stderr)
+
+def qry_registrar_userIdMedico(id, rol, usuario, num_doc, tipo_doc, nombres, apellidos, telefono, direccion, especialidad):
+  try:
+    qry = "INSERT INTO " + rol + " (" + usuario + "_usuario_id, med_identificacion, med_tipo_identificacion, med_nombres, med_apellidos, med_telefono, med_direccion, med_especialidad_id) VALUES (" + id + ", " + num_doc + ", " + tipo_doc + ", '" + nombres + "', '" + apellidos + "', " + telefono + ", '" + direccion + "', " + especialidad + ");"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -73,7 +214,17 @@ def qry_verificar_token(email, token):
     cursorObj = con.cursor()
     cursorObj.execute(qry)
     result = cursorObj.fetchone()
-    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    return "Error al guardar datos"
+
+def qry_verificar_token_password(email, token):
+  try:
+    qry = "SELECT usu_email, usu_token FROM usuarios WHERE usu_email = '" + email + "' AND usu_token_reco = '" + token + "'"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchone()
     return result
   except Error as e:
     return "Error al guardar datos"
@@ -106,6 +257,45 @@ def qry_listar_citas_paciente(id, texto):
 def qry_listar_citas_medico(id, tipo, texto):
   try:
     qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_listar_citas_administrador(texto):
+  try:
+    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte, medicos WHERE cit_medico_id = med_id AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_listar_medicos_administrador(texto):
+  try:
+    qry = "SELECT med_usuario_id, med_nombres, med_apellidos, med_identificacion, usu_estado FROM medicos, usuarios WHERE usu_id = med_usuario_id " + texto + " ORDER BY med_nombres ASC"
+    con = sql_connection()
+    cursorObj = con.cursor()
+    cursorObj.execute(qry)
+    result = cursorObj.fetchall()
+    print(result, file=sys.stderr)
+    return result
+  except Error as e:
+    print(e, file=sys.stderr)
+    return "Error al cargar datos"
+
+def qry_listar_pacientes_administrador(texto):
+  try:
+    qry = "SELECT pac_usuario_id, pac_nombres, pac_apellidos, pac_identificacion, usu_estado FROM pacientes, usuarios WHERE usu_id = pac_usuario_id " + texto + " ORDER BY pac_nombres ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

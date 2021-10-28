@@ -64,6 +64,55 @@ def cerrarSesion():
 		msg = e
 		return ({'status':'FAIL','msg':msg})
 
+@app.route('/cambiarPassword', methods=['POST'])
+def cambiarPassword():
+	try:
+		old = request.form['old']
+		new = request.form['new']
+		hash_db = consultas.qry_verificar_password(str(session["id_usuario"]))[0]
+		if bcrypt.checkpw(old.encode(), hash_db.encode()):
+			hash    = funciones.crear_hash(new).decode("utf-8")
+			consultas.qry_cambiar_password(str(session["id_usuario"]), hash)
+			sts = "OK"
+			msg = "Nueva contraseña guardada"
+		else:
+			sts = "FAIL"
+			msg = "Contraseña incorrecta"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/recuperarPassword', methods=['POST'])
+def recuperarPassword():
+	try:
+		email = request.form['emai']
+		token   = bcrypt.gensalt().decode("utf-8") + '/?edwin'
+		rs = consultas.qry_restablecer_password(email, token)
+		yag.send(to=email, subject='Restablece tu contraseña', contents='Bienvenido, usa este link para restablecer tu contraseña: http://127.0.0.1:5000/restablecer/?token=' + email + ':::' + token)
+		return ({'status':'OK','msg':'Verifica en tu correo para activar tu cuenta'})
+	except Exception as e:
+		return ({'status':'FAIL','msg':'Verifica en tu correo para activar tu cuenta'})
+
+@app.route('/restablecerPassword', methods=['POST'])
+def restablecerPassword():
+	try:
+		password = request.form['pass']
+		email    = request.form['emai']
+		token    = request.form['toke']
+		result = consultas.qry_verificar_token_password(email, token)
+		if result:
+			hash = funciones.crear_hash(password).decode("utf-8")
+			consultas.qry_cambiar_password_reco(email, hash)
+			consultas.qry_cambiar_password_reco(email, hash)
+			sts = "OK"
+			msg = "Se ha restablecido tu contraseña"
+		else:
+			sts = "FAIL"
+			msg = "El token de acceso ha expirado o no existe"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':'El token de acceso ha expirado o no existe'})
+
 @app.route('/recuperar_password/')
 def recuperar_password():
 	botonesSesion()
@@ -89,9 +138,32 @@ def registrar():
 		fecha   = time.strftime("%Y-%m-%d")
 		token   = bcrypt.gensalt().decode("utf-8")
 		hash    = funciones.crear_hash(password).decode("utf-8")
-		last_id = consultas.qry_registrar_usuario(email, token, hash, fecha, "5", "8")
+		last_id = consultas.qry_registrar_usuario(email, token + '/?edwin', hash, fecha, "5", "8")
 		consultas.qry_registrar_userId(str(last_id), "pacientes", "pac", num_doc, "1", nombres, apellidos, telefono, direccion)
-		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token + '/?edwin')
+		msg = "Revisa tu correo para activar tu cuenta"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/registrarMedico', methods=['POST'])
+def registrarMedico():
+	try:
+		nombres      = request.form['nomb']
+		apellidos    = request.form['apel']
+		num_doc      = request.form['numd']
+		email        = request.form['emai']
+		telefono     = request.form['tele']
+		direccion    = request.form['dire']
+		password     = request.form['pass']
+		especialidad = request.form['espe']
+		fecha        = time.strftime("%Y-%m-%d")
+		token        = bcrypt.gensalt().decode("utf-8")
+		hash         = funciones.crear_hash(password).decode("utf-8")
+		last_id      = consultas.qry_registrar_medico(email, token + '/?edwin', hash, fecha, "5", "8")
+		consultas.qry_registrar_userIdMedico(str(last_id), "medicos", "med", num_doc, "1", nombres, apellidos, telefono, direccion, especialidad)
+		yag.send(to=email, subject='Activa tu cuenta', contents='Bienvenido, usa este link para activar tu cuenta: http://127.0.0.1:5000/activar/?token=' + email + ':::' + token + '/?edwin')
 		msg = "Revisa tu correo para activar tu cuenta"
 		sts = "OK"
 		return ({'status':sts,'msg':msg})
@@ -117,6 +189,25 @@ def activarCuenta():
 	except Exception as e:
 		return "Error en el sistema, reintentelo mas tarde"
 
+@app.route('/restablecer/', methods=['GET'])
+def restablecerPass():
+	try:
+		if request.method == 'GET':
+			token = request.args.get('token')
+			datos = token.split(":::")
+			email = datos[0]
+			token = datos[1]
+			result = consultas.qry_verificar_token_password(email, token)
+			if result:
+				return render_template("restablecer.html", token = token, email = email)
+			else:
+				msg = "El token de acceso ha expirado o no existe"
+			return msg
+		else:
+			return render_template("error_404.html"), 404
+	except Exception as e:
+		return render_template("error_404.html"), 404
+
 @app.route('/panel/')
 def panel():
 	botonesSesion()
@@ -134,7 +225,16 @@ def panel():
 		else:
 			flash(session["paneles"], "paneles")
 			if session["tipo_usuario"] == "ADMINISTRADOR":
-				return render_template('/administrador.html')
+				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "administradores", "adm")[0]
+				tipo_citas        = consultas.qry_soporte("CITD")
+				tipo_medicos      = consultas.qry_soporte("MEDA")
+				tipo_pacientes    = consultas.qry_soporte("PACA")
+				tipo_docs 				= consultas.qry_soporte("DOCS")
+				tipo_especialidad = consultas.qry_soporte("ESPE")
+				listado_citas     = consultas.qry_listar_citas_administrador("")
+				listado_medicos   = consultas.qry_listar_medicos_administrador("")
+				listado_pacientes = consultas.qry_listar_pacientes_administrador("")
+				return render_template('administrador.html', tipo_docs = tipo_docs, tipo_especialidad = tipo_especialidad, tipo_citas = tipo_citas, tipo_medicos = tipo_medicos, tipo_pacientes = tipo_pacientes, listado_citas = listado_citas, listado_medicos = listado_medicos, listado_pacientes = listado_pacientes)
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
@@ -158,7 +258,39 @@ def listarCitasPacientes():
 		return ({'status':sts,'msg':msg, 'datos':datos})
 	except Exception as e:
 		return ({'status':'FAIL','msg':e})
-#AND med_apellidos LIKE '%b%' OR med_nombres LIKE '%b%' 
+
+@app.route('/listarCitasAdministradores', methods=['POST'])
+def listarCitasAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_citas_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/listarMedicosAdministradores', methods=['POST'])
+def listarMedicosAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_medicos_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/listarPacientesAdministradores', methods=['POST'])
+def listarPacientesAdministradores():
+	try:
+		texto = "AND " + request.form['sele'] + " LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_pacientes_administrador(texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/usuario/')
 def usuario():
@@ -166,8 +298,60 @@ def usuario():
 	if session["online"] == False:
 		return redirect("/inicio")
 	else:
-		datos = consultas.qry_cargar_datos_usuario(str(session["codigo"]))
+		datos = consultas.qry_cargar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]))
 		return render_template("usuario.html", datos = datos)
+
+@app.route('/detallesUsuario', methods=['POST'])
+def detallesUsuario():
+	try:
+		id	 		= request.form['id']
+		rol 		= request.form['rol']
+		usuario = request.form['usua']
+		datos = consultas.qry_detalles_usuario(id, rol, usuario)
+		msg = "Datos cargados con exito"
+		sts = "OK"
+		return ({'status':sts,'msg':msg, 'datos': datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/actualizarUsuario', methods=['POST'])
+def actualizarUsuario():
+	try:
+		nombres 				 = request.form['nomb']
+		apellidos 			 = request.form['apel']
+		telefono 			 	 = request.form['tele']
+		direccion 		 	 = request.form['dire']
+		fecha_nacimiento = request.form['fech']
+		edad 	 					 = request.form['edad']
+		sexo 	 					 = request.form['sexo']
+		consultas.qry_actualizar_usuario(str(session["codigo"]), str(session["rol"]), str(session["usuario"]), nombres, apellidos, telefono, direccion, fecha_nacimiento, edad, sexo)
+		msg = "Datos guardados con exito"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/bloquearUsuario', methods=['POST'])
+def bloquearUsuario():
+	try:
+		usua = request.form['usua']
+		consultas.qry_bloquear_usuario(usua)
+		msg = "Usuario bloqueado"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/desbloquearUsuario', methods=['POST'])
+def desbloquearUsuario():
+	try:
+		usua = request.form['usua']
+		consultas.qry_desbloquear_usuario(usua)
+		msg = "Usuario desbloqueado"
+		sts = "OK"
+		return ({'status':sts,'msg':msg})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
 
 @app.route('/contactos/')
 def contactos():
@@ -178,6 +362,11 @@ def contactos():
 def servicios():
 	botonesSesion()
 	return render_template('servicios.html')
+
+@app.route('/preguntas/')
+def	preguntas():
+	botonesSesion()
+	return render_template('preguntas.html')
 
 def botonesSesion():
 	session.pop('_flashes', None)

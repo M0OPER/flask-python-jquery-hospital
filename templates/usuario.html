@@ -15,18 +15,20 @@
 {% block contenido %}
 <div class="modal-body" >
   <h4>{% block titulo_form %} MIS DATOS PERSONALES {% endblock %}</h4>
+            
   <hr>
       <form>
-
+        {% if datos %}
+            
        <div class="form-group">
         <div class="row">
         <div class="col">
-         <label for="dpNombres">Nombres</label>
-   <input type="text" class="form-control" id="dpNombres" placeholder="">
+         <label for="duNombres">Nombres</label>
+   <input type="text" class="form-control" id="duNombres" value="{% print(datos[0]) %}">
         </div>
         <div class="col">
-         <label for="dpApellidos">Apellidos</label>
-   <input type="text" class="form-control" id="dpApellidos" placeholder="">
+         <label for="duApellidos">Apellidos</label>
+   <input type="text" class="form-control" id="duApellidos" value="{% print(datos[1]) %}">
         </div>
        </div>
        </div>
@@ -34,18 +36,14 @@
        <div class="form-group">
         <div class="row">
         <div class="col">
-         <label for="dpTipoDocumento">Tipo de documento</label>
-   <select class="form-control" id="dpTipoDocumento" disabled>
-          <option>Cedula</option>
-          <option>Cedula</option>
-          <option>Tarjeta de identidad</option>
-          <option>4</option>
-          <option>5</option>
+         <label>Tipo de documento</label>
+   <select class="form-control" disabled>
+          <option>{% print(datos[2]) %}</option>
          </select>
         </div>
         <div class="col">
-         <label for="dpNumeroDocumento">Numero documento</label>
-   <input type="text" class="form-control" id="dpNumeroDocumento" placeholder="" disabled value="">
+         <label>Numero documento</label>
+   <input type="text" class="form-control" placeholder="" disabled value="{% print(datos[3]) %}">
         </div>
        </div>
        </div>
@@ -53,12 +51,12 @@
        <div class="form-group">
         <div class="row">
         <div class="col">
-         <label for="dbTelefono">Telefono</label>
-   <input type="text" class="form-control" id="dbTelefono" placeholder="">
+         <label for="duTelefono">Telefono</label>
+   <input type="text" class="form-control" id="duTelefono" value="{% print(datos[4]) %}">
         </div>
         <div class="col">
-         <label for="dpDireccion">Direccion</label>
-   <input type="text" class="form-control" id="dpDireccion" placeholder="">
+         <label for="duDireccion">Direccion</label>
+   <input type="text" class="form-control" id="duDireccion" value="{% print(datos[5]) %}">
         </div>
        </div>
        </div>
@@ -66,43 +64,47 @@
        <div class="form-group">
         <div class="row">
         <div class="col">
-         <label for="dpFechaNacimiento">Fecha de nacimiento</label>
-   <input type="date" class="form-control" id="dpFechaNacimiento" placeholder="">
+         <label for="duFechaNacimiento">Fecha de nacimiento</label>
+          <input type="date" class="form-control" id="duFechaNacimiento" min="1900-04-01" max="2025-12-12" value="{% print(datos[6]) %}">
         </div>
         <div class="col">
-         <label for="exampleInputPassword1">Sexo</label>
-         <div>
-           <div><input class="form-check-input" type="radio" name="dpSexo" id="dpSexo1" value="option1">
-            <label class="form-check-label" for="dpSexo1">
-              Masculino
-            </label></div>
-           <div><input class="form-check-input" type="radio" name="dpSexo" id="dpSexo2" value="option1">
-            <label class="form-check-label" for="dpSexo2">
-              Femenino
-            </label></div>
+          <label for="duEdad">Edad</label>
+          <input type="number" class="form-control" id="duEdad" value="{% print(datos[7]) %}">
          </div>
+        <div class="col">
+         <label for="duSexo">Sexo</label>
+         <select class="form-control" id="duSexo">
+          <option value="None" selected>--Seleccionar--</option>
+          <option value="27">Masculino</option>
+          <option value="26">Femenino</option>
+         </select>
         </div>
+        <script>document.ready = document.getElementById("duSexo").value = '{% print(datos[8]) %}';</script>
        </div>
        </div>
-
+       
        <div class="form-group">
         <div class="row">
         <div class="col">
-         <label for="dpEmail">Correo electronico</label>
-           <input type="text" class="form-control" id="dpEmail" placeholder="" disabled>
-        </div>
-        <div class="col">
-         <label for="dpPassword">Contraseña actual</label>
-   <input type="password" class="form-control" id="dpPassword" placeholder="" disabled>
-        </div>
+         <label>Correo electronico</label>
+           <input type="text" class="form-control" value="{% print(datos[9]) %}" disabled>
+        </div>        
+        
         <div class="col">
          <label>&nbsp</label>
          <div><button type="button" class="btn btn-verde" data-toggle="modal" data-target="#modalModificarPassword">CAMBIA TU CONTRASEÑA</button></div>
         </div>
+        <div class="col">
+          <div id="msgUsuario"><script type="text/javascript" src="../static/js/mensaje.js"></script></div>
+          <label>&nbsp</label>
+    <div><button id="duActualizar" type="button" class="btn btn-verde">ACTUALIZAR DATOS</button></div>
+         </div>
        </div>
+       
        </div>
 
       </form>
+      {% endif %}
 </div>
 <script type="text/javascript" src="../static/js/bodyUsuario.js"></script>
 {% endblock %}
