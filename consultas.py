@@ -243,7 +243,7 @@ def qry_activar_cuenta(email, token):
 
 def qry_listar_citas_paciente(id, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, cit_fecha_hora FROM citas, medicos, soporte WHERE cit_paciente_id = '" + id + "' AND cit_medico_id = med_id AND cit_estado = sop_id " + texto + " ORDER BY cit_created_at DESC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -256,7 +256,7 @@ def qry_listar_citas_paciente(id, texto):
 
 def qry_listar_citas_medico(id, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY cit_created_at DESC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
@@ -269,7 +269,7 @@ def qry_listar_citas_medico(id, texto):
 
 def qry_listar_citas_administrador(texto):
   try:
-    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte, medicos WHERE cit_medico_id = med_id AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, med_nombres  || ' ' || med_apellidos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte, medicos WHERE cit_medico_id = med_id AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY cit_created_at DESC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)

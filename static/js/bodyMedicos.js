@@ -97,8 +97,7 @@ document.write(`
             </div>
             <div class="form-group">
               <label for="acHistoria">Detalles/Hisotria clinica</label>
-              <textarea id="acHistoria" class="form-control" rows="2">
-              </textarea>
+              <textarea id="acHistoria" class="form-control" rows="2"></textarea>
             </div>
           </fieldset>
         </form>
