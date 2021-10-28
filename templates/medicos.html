@@ -5,10 +5,10 @@
     <div class="form-group">
       <div class="row">
         <div class="col-4">
-          <input id="pnlBuscar" name="pnlBuscar" type="text" class="form-control" placeholder="BUSCAR CITAS...">
+          <input id="pnlBuscarCitasMedicos" type="text" class="form-control" placeholder="BUSCAR CITAS POR APELLIDOS DEL PACIENTE...">
         </div>
         <div class="col-2">
-          <select class="form-control text-white bg-dark manita" id="buscar">
+          <select class="form-control text-white bg-dark manita" id="pnlBuscarSeleccion">
            {% for tipo in tipo_citas %}
             <option value="{% print(tipo[2]) %}">{% print(tipo[3]) %}</option>
            {% endfor %}
@@ -35,7 +35,7 @@
               <th scope="col">COMENTAR</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tblCitasMedicos">
             {% for datos in listado_citas %}
               <tr>
                 <th scope="row">{{loop.index}}</th>

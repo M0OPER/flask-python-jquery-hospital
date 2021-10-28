@@ -239,7 +239,7 @@ def panel():
 			elif session["tipo_usuario"] == "MEDICO":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "medicos", "med")[0]
 				tipo_citas = consultas.qry_soporte("CITM")
-				listado_citas = consultas.qry_listar_citas_medico(str(session["codigo"]), "estado_id", "")
+				listado_citas = consultas.qry_listar_citas_medico(str(session["codigo"]), "")
 				return render_template("medicos.html", tipo_citas = tipo_citas, listado_citas = listado_citas, nombre = session["name"])
 			elif session["tipo_usuario"] == "PACIENTE":
 				session["codigo"] = consultas.qry_session_id(str(session["id_usuario"]), "pacientes", "pac")[0]
@@ -254,6 +254,17 @@ def listarCitasPacientes():
 	try:
 		texto = "AND med_apellidos LIKE '%" + request.form['text'] + "%'"
 		datos = consultas.qry_listar_citas_paciente(str(session["codigo"]), texto)
+		msg 	= "Datos cargados correctamente"
+		sts	  = "OK"
+		return ({'status':sts,'msg':msg, 'datos':datos})
+	except Exception as e:
+		return ({'status':'FAIL','msg':e})
+
+@app.route('/listarCitasMedicos', methods=['POST'])
+def listarCitasMedicos():
+	try:
+		texto = "AND pac_apellidos LIKE '%" + request.form['text'] + "%'"
+		datos = consultas.qry_listar_citas_medico(str(session["codigo"]), texto)
 		msg 	= "Datos cargados correctamente"
 		sts	  = "OK"
 		return ({'status':sts,'msg':msg, 'datos':datos})

@@ -254,9 +254,9 @@ def qry_listar_citas_paciente(id, texto):
     print(e, file=sys.stderr)
     return "Error al cargar datos"
 
-def qry_listar_citas_medico(id, tipo, texto):
+def qry_listar_citas_medico(id, texto):
   try:
-    qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id ORDER BY sop_datos, cit_fecha_hora ASC"
+    qry = "SELECT cit_id, sop_datos, pac_nombres  || ' ' || pac_apellidos, cit_fecha_hora FROM citas, pacientes, soporte WHERE cit_medico_id = '" + id + "' AND cit_paciente_id = pac_id AND cit_estado = sop_id " + texto + " ORDER BY sop_datos, cit_fecha_hora ASC"
     con = sql_connection()
     cursorObj = con.cursor()
     cursorObj.execute(qry)
