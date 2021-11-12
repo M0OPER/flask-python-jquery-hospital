@@ -1,0 +1,18 @@
+# hospital
+USUARIO Y CONTRASEÑA PARA EL LOGIN
+
+=>Para ingresar al sistema registra un paciente como normalmente lo haria, active la cuenta desde el correo registrado
+
+=>En el caso del medico nunca se habló de su registro, por lógica los registra el superadministrador
+
+=>EN el caso del administrador el usuario y contraseña ya los cree manualmente ya que es el superusuario
+ADMINISTRADOR PRECREADO PARA PROBAR EL SISTEMA 
+edwinrafaelmontesmeza@gmail.com => admin1234
+
+MEDICOS PRECREADOS PARA PROBAR EL SISTEMA 
+med45@hotmail.com      => easy1234
+godred12992@gmail.com => easy1234
+
+PACIENTES PRECREADOS PARA PROBAR EL SISTEMA 
+godred1299@gmail.com          => easy1234
+manuelrafaelbonilla@gmail.com => pindi1234
