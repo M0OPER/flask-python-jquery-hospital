@@ -1,4 +1,4 @@
-# hospital
+# HOSPITAL
 USUARIO Y CONTRASEÑA PARA EL LOGIN
 
 =>Para ingresar al sistema registra un paciente como normalmente lo haria, active la cuenta desde el correo registrado
