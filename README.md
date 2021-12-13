@@ -1,4 +1,4 @@
-# HOSPITAL
+# HOSPITAL - FLASK, PYTHON, JQUERY
 USUARIO Y CONTRASEÑA PARA EL LOGIN
 
 =>Para ingresar al sistema registra un paciente como normalmente lo haria, active la cuenta desde el correo registrado
